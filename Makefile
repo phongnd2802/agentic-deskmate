@@ -19,7 +19,7 @@ typecheck:
 
 # Seam 2: the browser through Next.js.
 test-e2e:
-	docker compose up -d --build --wait
+	SCRIPTED_MODEL=true docker compose up -d --build --wait
 	cd frontend && bunx playwright test
 	docker compose down
 

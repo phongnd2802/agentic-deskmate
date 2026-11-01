@@ -14,6 +14,13 @@ class Settings(BaseSettings):
     # Secure cookie: on everywhere except local development over plain HTTP.
     session_cookie_secure: bool = True
 
+    # Fernet key that encrypts Provider API keys at rest: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+    encryption_key: str = ""
+    # Comma-separated networks (CIDR) a Provider may live in although they are private, such as a local Ollama: "127.0.0.0/8,10.0.0.0/8".
+    provider_allowed_networks: str = ""
+    # Answer with the scripted Model instead of calling a Provider. For tests and the browser tests only.
+    scripted_model: bool = False
+
     @property
     def owner_database_url(self) -> str:
         return self.migration_database_url or self.database_url

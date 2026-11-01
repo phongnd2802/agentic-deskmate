@@ -35,3 +35,16 @@ export async function fetchConversations(cookie: string): Promise<ConversationSu
 export function fetchConversation(cookie: string, id: string): Promise<Conversation | null> {
   return fetchJson<Conversation>(`/conversations/${encodeURIComponent(id)}`, cookie);
 }
+
+export type ChoosableModel = components["schemas"]["ChoosableModelOut"];
+export type Provider = components["schemas"]["ProviderOut"];
+
+/** The Models the signed-in User's Organization offers. */
+export async function fetchModels(cookie: string): Promise<ChoosableModel[]> {
+  return (await fetchJson<ChoosableModel[]>("/models", cookie)) ?? [];
+}
+
+/** The Organization's Providers; the backend refuses anyone but an Admin. */
+export async function fetchProviders(cookie: string): Promise<Provider[]> {
+  return (await fetchJson<Provider[]>("/providers", cookie)) ?? [];
+}

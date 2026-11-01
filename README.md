@@ -15,7 +15,7 @@ make dev                 # Postgres, FastAPI and Next.js with hot reload
 open http://localhost:3000
 ```
 
-The scripted Model answers every question until Providers are added (#6). FastAPI is not published to the host: the browser only talks to Next.js, which proxies the run to the backend inside the Compose network.
+An Admin adds Providers in Settings; Users pick one of their Models in the composer. Set `ENCRYPTION_KEY` (a Fernet key) to protect stored API keys; Compose has a development default. Private and loopback Provider addresses are blocked unless `PROVIDER_ALLOWED_NETWORKS` lists their network (comma-separated CIDR). FastAPI is not published to the host: the browser only talks to Next.js, which proxies the run to the backend inside the Compose network.
 
 ## Tests
 
@@ -26,7 +26,7 @@ make test-e2e            # Seam 2: Playwright through Next.js (starts and stops 
 make typecheck
 ```
 
-The single Model factory in `backend/app/agent/factory.py` is the substitution point: both seams use its scripted Model, so no test needs a real LLM or API key.
+The single Model factory in `backend/app/agent/factory.py` is the substitution point: both seams use its scripted Model, so no test needs a real LLM or API key. It returns the scripted Model when `SCRIPTED_MODEL=true`, which the tests and `make test-e2e` set.
 
 ## API types
 

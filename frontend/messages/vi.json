@@ -6,7 +6,8 @@
       "dashboard": "Bảng điều khiển",
       "chat": "Trò chuyện",
       "agents": "Agent",
-      "knowledgeBases": "Cơ sở tri thức"
+      "knowledgeBases": "Cơ sở tri thức",
+      "settings": "Cài đặt"
     }
   },
   "placeholder": {
@@ -100,10 +101,54 @@
       "model_failed": "Mô hình không thể hoàn tất câu trả lời. Hãy thử lại.",
       "not_retryable": "Chỉ có thể thử lại câu trả lời đã dừng hoặc thất bại.",
       "answer_in_progress": "Câu trả lời vẫn đang được viết.",
-      "answer_not_saved": "Không thể lưu câu trả lời. Hãy thử lại."
+      "answer_not_saved": "Không thể lưu câu trả lời. Hãy thử lại.",
+      "model_not_found": "Hãy chọn một mô hình của Tổ chức bạn rồi thử lại.",
+      "model_unavailable": "Mô hình đã viết câu trả lời này không còn khả dụng. Hãy bắt đầu một cuộc trò chuyện mới và chọn mô hình khác.",
+      "blocked_address": "Địa chỉ của Nhà cung cấp này bị chặn nên câu hỏi chưa được gửi. Admin cần sửa Nhà cung cấp trong Cài đặt."
     },
     "stopped": "Đã dừng",
     "retry": "Thử lại",
-    "failed": "Thất bại: Mô hình không thể hoàn tất câu trả lời này."
+    "failed": "Thất bại: Mô hình không thể hoàn tất câu trả lời này.",
+    "model": "Mô hình",
+    "noProvider": "Tổ chức của bạn chưa có Nhà cung cấp nào nên chưa thể trả lời câu hỏi. Hãy nhờ Admin thêm một Nhà cung cấp trong Cài đặt."
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "providers": "Nhà cung cấp",
+    "addProvider": "Thêm Nhà cung cấp",
+    "editProvider": "Sửa Nhà cung cấp",
+    "empty": "Chưa có Nhà cung cấp nào. Hãy thêm một Nhà cung cấp để Tổ chức của bạn đặt câu hỏi trong Trò chuyện.",
+    "name": "Tên",
+    "apiType": "Loại API",
+    "apiTypes": {
+      "openai": "Tương thích OpenAI",
+      "anthropic": "Tương thích Anthropic"
+    },
+    "baseUrl": "URL cơ sở",
+    "apiKey": "Khóa API",
+    "apiKeyStored": "Được lưu dưới dạng mã hóa và không bao giờ hiển thị lại.",
+    "apiKeyKeep": "Để trống để giữ khóa hiện tại.",
+    "models": "Mô hình",
+    "modelId": "ID mô hình",
+    "generativeUi": "Generative UI",
+    "addModel": "Thêm mô hình",
+    "removeModel": "Xóa mô hình",
+    "save": "Lưu",
+    "saving": "Đang lưu…",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "editNamed": "Sửa {name}",
+    "deleteNamed": "Xóa {name}",
+    "deleteTitle": "Xóa {name}?",
+    "deleteBody": "Các mô hình của Nhà cung cấp này sẽ biến mất khỏi Trò chuyện. Các câu trả lời đã có vẫn đọc được.",
+    "error": {
+      "generic": "Không thể lưu Nhà cung cấp. Hãy kiểm tra các trường và thử lại.",
+      "blocked_address": "Địa chỉ này là địa chỉ riêng hoặc loopback nên bị chặn. Hãy nhờ Operator cho phép mạng của nó trong cấu hình máy chủ.",
+      "invalid_base_url": "Nhập địa chỉ http hoặc https có thể phân giải, không kèm tên người dùng hay mật khẩu.",
+      "name_taken": "Đã có Nhà cung cấp với tên này.",
+      "key_required": "Nhập khóa API.",
+      "deleteFailed": "Không thể xóa Nhà cung cấp. Hãy thử lại."
+    },
+    "baseUrlPlaceholder": "https://api.example.com/v1"
   }
 }

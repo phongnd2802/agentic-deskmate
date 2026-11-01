@@ -24,11 +24,14 @@ export function Sidebar({
   navLabel,
   items,
   user,
+  settings,
 }: {
   name: string;
   navLabel: string;
   items: NavItem[];
   user: { email: string };
+  /** Only Admins get this; the backend refuses everyone else anyway. */
+  settings?: NavItem;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -62,7 +65,17 @@ export function Sidebar({
           })}
         </ul>
       </nav>
-      <div className="mt-auto pt-2">
+      <div className="mt-auto space-y-0.5 pt-2">
+        {settings && (
+          <Link
+            href={settings.href}
+            aria-current={pathname.startsWith(settings.href) ? "page" : undefined}
+            className={navLinkClass(pathname.startsWith(settings.href))}
+          >
+            {settings.icon}
+            {settings.label}
+          </Link>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

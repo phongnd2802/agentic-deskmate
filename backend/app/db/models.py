@@ -4,7 +4,7 @@ protected by Row-Level Security in the migration (ADR-0001)."""
 import uuid
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, CheckConstraint, DateTime, ForeignKey, String, Text, UniqueConstraint, false, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -42,6 +42,35 @@ class Session(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     token_hash: Mapped[str] = mapped_column(String(64), unique=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Provider(Base):
+    __tablename__ = "providers"
+    __table_args__ = (
+        CheckConstraint("api_type IN ('openai', 'anthropic')", name="providers_api_type_check"),
+        UniqueConstraint("organization_id", "name"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    name: Mapped[str] = mapped_column(String(200))
+    api_type: Mapped[str] = mapped_column(String(10))
+    base_url: Mapped[str] = mapped_column(Text)
+    # Fernet token; the key comes from server configuration.
+    api_key_encrypted: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Model(Base):
+    __tablename__ = "models"
+    __table_args__ = (UniqueConstraint("provider_id", "model_id"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    provider_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("providers.id", ondelete="CASCADE"), index=True)
+    model_id: Mapped[str] = mapped_column(String(200))
+    generative_ui: Mapped[bool] = mapped_column(Boolean, server_default=false())
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -84,5 +113,7 @@ class Answer(Base):
     status: Mapped[str] = mapped_column(String(10))
     provider_name: Mapped[str | None] = mapped_column(String(200))
     model_id: Mapped[str] = mapped_column(String(200))
+    # The Model row that wrote it, so a retry finds the same Model. No foreign key: deleting a Provider must not touch history.
+    model_row_id: Mapped[uuid.UUID | None] = mapped_column()
     parts: Mapped[list] = mapped_column(JSONB)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

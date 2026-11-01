@@ -6,7 +6,8 @@
       "dashboard": "Dashboard",
       "chat": "Chat",
       "agents": "Agents",
-      "knowledgeBases": "Knowledge Bases"
+      "knowledgeBases": "Knowledge Bases",
+      "settings": "Settings"
     }
   },
   "placeholder": {
@@ -100,10 +101,54 @@
       "model_failed": "The Model could not finish the Answer. Try again.",
       "not_retryable": "Only a stopped or failed Answer can be retried.",
       "answer_in_progress": "An Answer is still being written.",
-      "answer_not_saved": "The Answer could not be saved. Try again."
+      "answer_not_saved": "The Answer could not be saved. Try again.",
+      "model_not_found": "Choose one of your Organization's Models and try again.",
+      "model_unavailable": "The Model that wrote this Answer is no longer available. Start a new Conversation and pick another Model.",
+      "blocked_address": "This Provider's address is blocked, so the question was not sent. An Admin must fix the Provider in Settings."
     },
     "stopped": "Stopped",
     "retry": "Retry",
-    "failed": "Failed: the Model could not finish this Answer."
+    "failed": "Failed: the Model could not finish this Answer.",
+    "model": "Model",
+    "noProvider": "Your Organization has no Provider yet, so questions cannot be answered. Ask an Admin to add one in Settings."
+  },
+  "settings": {
+    "title": "Settings",
+    "providers": "Providers",
+    "addProvider": "Add Provider",
+    "editProvider": "Edit Provider",
+    "empty": "No Provider yet. Add one so your Organization can ask questions in Chat.",
+    "name": "Name",
+    "apiType": "API type",
+    "apiTypes": {
+      "openai": "OpenAI-compatible",
+      "anthropic": "Anthropic-compatible"
+    },
+    "baseUrl": "Base URL",
+    "apiKey": "API key",
+    "apiKeyStored": "Stored encrypted. It is never shown again.",
+    "apiKeyKeep": "Leave empty to keep the current key.",
+    "models": "Models",
+    "modelId": "Model ID",
+    "generativeUi": "Generative UI",
+    "addModel": "Add Model",
+    "removeModel": "Remove Model",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "editNamed": "Edit {name}",
+    "deleteNamed": "Delete {name}",
+    "deleteTitle": "Delete {name}?",
+    "deleteBody": "Its Models disappear from Chat. Existing Answers stay readable.",
+    "error": {
+      "generic": "The Provider could not be saved. Check the fields and try again.",
+      "blocked_address": "This address is private or loopback, so it is blocked. Ask the Operator to allow its network in the server configuration.",
+      "invalid_base_url": "Enter an http or https address that can be resolved, without a user name or password.",
+      "name_taken": "A Provider with this name already exists.",
+      "key_required": "Enter the API key.",
+      "deleteFailed": "The Provider could not be deleted. Try again."
+    },
+    "baseUrlPlaceholder": "https://api.example.com/v1"
   }
 }

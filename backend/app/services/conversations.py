@@ -3,16 +3,16 @@
 A Conversation that another User created is indistinguishable from one that does not exist.
 """
 
-from contextlib import asynccontextmanager
 from uuid import UUID, uuid4
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from app.db.models import Answer, Conversation, Question
-from app.db.session import session_factory, set_organization
+from app.db.session import scoped
 from app.schemas.conversations import AnswerStatus
 from app.services.auth import CurrentUser
+from app.services.providers import ModelChoice
 
 
 # Conversations with an Answer being written. shortcut: one process, like the in-memory runner (ADR-0002); use a row lock or a
@@ -32,13 +32,6 @@ def release(conversation_id: UUID) -> None:
     _running.discard(conversation_id)
 
 
-@asynccontextmanager
-async def _scoped(user: CurrentUser):
-    async with session_factory() as db, db.begin():
-        await set_organization(db, user.organization_id)
-        yield db
-
-
 async def start_conversation(user: CurrentUser, conversation_id: UUID, question: str) -> UUID | None:
     """Create the Conversation with its question and return the question's ID.
 
@@ -47,7 +40,7 @@ async def start_conversation(user: CurrentUser, conversation_id: UUID, question:
     """
     question_id = uuid4()
     try:
-        async with _scoped(user) as db:
+        async with scoped(user.organization_id) as db:
             db.add(Conversation(id=conversation_id, organization_id=user.organization_id, user_id=user.id))
             await db.flush()
             db.add(Question(id=question_id, organization_id=user.organization_id, conversation_id=conversation_id, text=question))
@@ -56,12 +49,12 @@ async def start_conversation(user: CurrentUser, conversation_id: UUID, question:
     return question_id
 
 
-async def start_retry(user: CurrentUser, conversation_id: UUID) -> tuple[UUID, str, str | None] | None:
-    """The question ID, text and Model ID (None when nothing was stored) to answer again.
+async def start_retry(user: CurrentUser, conversation_id: UUID) -> tuple[UUID, str, bool, UUID | None] | None:
+    """The question ID and text to answer again, whether an Answer exists, and the ID of the Model row that wrote the latest one.
 
     None unless the User owns the Conversation and its latest Answer is stopped or failed, or it has a question and no Answer.
     """
-    async with _scoped(user) as db:
+    async with scoped(user.organization_id) as db:
         latest = await db.scalar(
             select(Answer)
             .join(Conversation, Conversation.id == Answer.conversation_id)
@@ -73,7 +66,7 @@ async def start_retry(user: CurrentUser, conversation_id: UUID) -> tuple[UUID, s
             if latest.status == "complete":
                 return None
             question = await db.scalar(select(Question.text).where(Question.id == latest.question_id))
-            return latest.question_id, question, latest.model_id
+            return latest.question_id, question, True, latest.model_row_id
         # No Answer: a run that crashed before storing one. Whether one is still running is the caller's check.
         first = (
             await db.execute(
@@ -84,7 +77,7 @@ async def start_retry(user: CurrentUser, conversation_id: UUID) -> tuple[UUID, s
                 .limit(1)
             )
         ).first()
-    return None if first is None else (first.id, first.text, None)
+    return None if first is None else (first.id, first.text, False, None)
 
 
 async def save_answer(
@@ -92,11 +85,11 @@ async def save_answer(
     conversation_id: UUID,
     question_id: UUID,
     run_id: str,
-    model_id: str,
+    choice: ModelChoice,
     parts: list[dict],
     status: AnswerStatus,
 ) -> None:
-    async with _scoped(user) as db:
+    async with scoped(user.organization_id) as db:
         db.add(
             Answer(
                 organization_id=user.organization_id,
@@ -104,7 +97,9 @@ async def save_answer(
                 question_id=question_id,
                 run_id=run_id,
                 status=status,
-                model_id=model_id,
+                model_row_id=choice.id,
+                provider_name=choice.provider_name,
+                model_id=choice.model_id,
                 parts=parts,
             )
         )
@@ -116,7 +111,7 @@ def _mine(user: CurrentUser):
 
 async def list_conversations(user: CurrentUser) -> list[tuple[Conversation, str]]:
     """The User's own Conversations with their question, newest first."""
-    async with _scoped(user) as db:
+    async with scoped(user.organization_id) as db:
         rows = await db.execute(
             select(Conversation, Question.text)
             .join(Question, Question.conversation_id == Conversation.id)
@@ -131,7 +126,7 @@ async def list_conversations(user: CurrentUser) -> list[tuple[Conversation, str]
 
 
 async def get_conversation(user: CurrentUser, conversation_id: UUID) -> tuple[Conversation, str, list[Answer]] | None:
-    async with _scoped(user) as db:
+    async with scoped(user.organization_id) as db:
         conversation = await db.scalar(select(Conversation).where(Conversation.id == conversation_id, _mine(user)))
         if conversation is None:
             return None

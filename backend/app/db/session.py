@@ -6,6 +6,7 @@ engine is for migrations and the Operator CLI, which act outside any Organizatio
 """
 
 import uuid
+from contextlib import asynccontextmanager
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -23,3 +24,11 @@ async def set_organization(db: AsyncSession, organization_id: uuid.UUID) -> None
     """Scope the current transaction to one Organization. Transaction-local."""
     await db.execute(text("SELECT set_config('app.organization_id', :id, true)"), {"id": str(organization_id)})
 
+
+
+@asynccontextmanager
+async def scoped(organization_id: uuid.UUID):
+    """A transaction limited to one Organization."""
+    async with session_factory() as db, db.begin():
+        await set_organization(db, organization_id)
+        yield db

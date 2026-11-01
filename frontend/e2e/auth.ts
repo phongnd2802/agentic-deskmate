@@ -3,7 +3,7 @@ import { expect, Page, Request } from "@playwright/test";
 
 export type Credentials = { email: string; password: string };
 
-export function readCredentials(): { a: Credentials; b: Credentials } {
+export function readCredentials(): { a: Credentials; b: Credentials; c: Credentials } {
   return JSON.parse(readFileSync("test-results/e2e-credentials.json", "utf8"));
 }
 
