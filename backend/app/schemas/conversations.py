@@ -19,10 +19,13 @@ class ToolPartOut(BaseModel):
     args: str
 
 
+AnswerStatus = Literal["complete", "stopped", "failed"]
+
+
 class AnswerOut(BaseModel):
     id: UUID
     run_id: str
-    status: Literal["complete", "stopped", "failed"]
+    status: AnswerStatus
     provider_name: str | None
     model_id: str
     parts: list[TextPartOut | ToolPartOut]

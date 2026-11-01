@@ -96,7 +96,14 @@
       "second_question": "Cuộc trò chuyện này đã có câu hỏi. Hãy bắt đầu cuộc trò chuyện mới để hỏi điều khác.",
       "no_question": "Hãy nhập câu hỏi để bắt đầu cuộc trò chuyện.",
       "invalid_conversation": "Không thể bắt đầu cuộc trò chuyện này. Hãy bắt đầu cuộc trò chuyện mới.",
-      "generic": "Không thể gửi câu hỏi. Hãy thử lại."
-    }
+      "generic": "Không thể gửi câu hỏi. Hãy thử lại.",
+      "model_failed": "Mô hình không thể hoàn tất câu trả lời. Hãy thử lại.",
+      "not_retryable": "Chỉ có thể thử lại câu trả lời đã dừng hoặc thất bại.",
+      "answer_in_progress": "Câu trả lời vẫn đang được viết.",
+      "answer_not_saved": "Không thể lưu câu trả lời. Hãy thử lại."
+    },
+    "stopped": "Đã dừng",
+    "retry": "Thử lại",
+    "failed": "Thất bại: Mô hình không thể hoàn tất câu trả lời này."
   }
 }

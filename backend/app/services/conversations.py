@@ -11,7 +11,25 @@ from sqlalchemy.exc import IntegrityError
 
 from app.db.models import Answer, Conversation, Question
 from app.db.session import session_factory, set_organization
+from app.schemas.conversations import AnswerStatus
 from app.services.auth import CurrentUser
+
+
+# Conversations with an Answer being written. shortcut: one process, like the in-memory runner (ADR-0002); use a row lock or a
+# running status before several backend instances.
+_running: set[UUID] = set()
+
+
+def claim(conversation_id: UUID) -> bool:
+    """Mark a Conversation as having a run in progress. False when it already has one."""
+    if conversation_id in _running:
+        return False
+    _running.add(conversation_id)
+    return True
+
+
+def release(conversation_id: UUID) -> None:
+    _running.discard(conversation_id)
 
 
 @asynccontextmanager
@@ -25,7 +43,7 @@ async def start_conversation(user: CurrentUser, conversation_id: UUID, question:
     """Create the Conversation with its question and return the question's ID.
 
     Returns None when the ID is taken, by this User's earlier question (single-turn) or by anyone else's
-    Conversation. Both look the same on purpose.
+    Conversation. Both look the same on purpose. 
     """
     question_id = uuid4()
     try:
@@ -38,6 +56,37 @@ async def start_conversation(user: CurrentUser, conversation_id: UUID, question:
     return question_id
 
 
+async def start_retry(user: CurrentUser, conversation_id: UUID) -> tuple[UUID, str, str | None] | None:
+    """The question ID, text and Model ID (None when nothing was stored) to answer again.
+
+    None unless the User owns the Conversation and its latest Answer is stopped or failed, or it has a question and no Answer.
+    """
+    async with _scoped(user) as db:
+        latest = await db.scalar(
+            select(Answer)
+            .join(Conversation, Conversation.id == Answer.conversation_id)
+            .where(Answer.conversation_id == conversation_id, _mine(user))
+            .order_by(Answer.created_at.desc())
+            .limit(1)
+        )
+        if latest is not None:
+            if latest.status == "complete":
+                return None
+            question = await db.scalar(select(Question.text).where(Question.id == latest.question_id))
+            return latest.question_id, question, latest.model_id
+        # No Answer: a run that crashed before storing one. Whether one is still running is the caller's check.
+        first = (
+            await db.execute(
+                select(Question.id, Question.text)
+                .join(Conversation, Conversation.id == Question.conversation_id)
+                .where(Question.conversation_id == conversation_id, _mine(user))
+                .order_by(Question.created_at)
+                .limit(1)
+            )
+        ).first()
+    return None if first is None else (first.id, first.text, None)
+
+
 async def save_answer(
     user: CurrentUser,
     conversation_id: UUID,
@@ -45,6 +94,7 @@ async def save_answer(
     run_id: str,
     model_id: str,
     parts: list[dict],
+    status: AnswerStatus,
 ) -> None:
     async with _scoped(user) as db:
         db.add(
@@ -53,7 +103,7 @@ async def save_answer(
                 conversation_id=conversation_id,
                 question_id=question_id,
                 run_id=run_id,
-                status="complete",
+                status=status,
                 model_id=model_id,
                 parts=parts,
             )

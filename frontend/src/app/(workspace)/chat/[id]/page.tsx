@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { CircleAlert, CircleStop } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
@@ -20,6 +21,18 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
       {conversation.answers.map((answer) => (
         <section key={answer.id} aria-label={t("answer")}>
           {answer.parts.map((part, index) => part.type === "text" && <AnswerText key={index} text={part.text} />)}
+          {answer.status === "stopped" && (
+            <p className="flex items-center gap-2 text-sm text-warning">
+              <CircleStop aria-hidden className="size-4" />
+              {t("stopped")}
+            </p>
+          )}
+          {answer.status === "failed" && (
+            <p className="flex items-center gap-2 text-sm text-destructive">
+              <CircleAlert aria-hidden className="size-4" />
+              {t("failed")}
+            </p>
+          )}
         </section>
       ))}
     </div>
