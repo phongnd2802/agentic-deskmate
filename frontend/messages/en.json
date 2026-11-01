@@ -27,6 +27,21 @@
       "description": "The knowledge your Agents can use will live here."
     }
   },
+  "signIn": {
+    "title": "Sign in",
+    "description": "Use the email and password your Organization gave you.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "invalid": "Email or password is incorrect.",
+    "error": "Could not sign in. Try again.",
+    "noRegistration": "Your Admin adds Users to your Organization. Ask them for an Invitation."
+  },
+  "userMenu": {
+    "menuLabel": "User menu",
+    "signOut": "Sign out"
+  },
   "chat": {
     "inputPlaceholder": "Ask a question...",
     "sendButton": "Send",

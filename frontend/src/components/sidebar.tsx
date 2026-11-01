@@ -1,14 +1,37 @@
 "use client";
 
+import { LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type NavItem = { href: string; label: string; icon: React.ReactNode };
 
-export function Sidebar({ name, navLabel, items }: { name: string; navLabel: string; items: NavItem[] }) {
+export function Sidebar({
+  name,
+  navLabel,
+  items,
+  user,
+}: {
+  name: string;
+  navLabel: string;
+  items: NavItem[];
+  user: { email: string };
+}) {
   const pathname = usePathname();
+  const router = useRouter();
+  const t = useTranslations("userMenu");
+
+  async function signOut() {
+    await fetch("/api/backend/auth/sign-out", { method: "POST" });
+    router.replace("/sign-in");
+    router.refresh();
+  }
 
   return (
     <aside className="flex w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar p-2 text-sidebar-foreground">
@@ -35,6 +58,28 @@ export function Sidebar({ name, navLabel, items }: { name: string; navLabel: str
           })}
         </ul>
       </nav>
+      <div className="mt-auto pt-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              aria-label={t("menuLabel")}
+              className="w-full justify-start px-2 font-normal hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            >
+              <UserIcon aria-hidden />
+              <span className="truncate">{user.email}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuLabel className="truncate text-xs text-muted-foreground">{user.email}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={signOut}>
+              <LogOut aria-hidden className="size-4" />
+              {t("signOut")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </aside>
   );
 }

@@ -11,7 +11,8 @@ test: test-backend typecheck test-e2e
 
 # Seam 1: the real AG-UI endpoint with the scripted Model.
 test-backend:
-	cd backend && uv run pytest
+	docker compose up -d --wait db
+	cd backend && DATABASE_URL='postgresql+asyncpg://deskmate_app:deskmate_app@localhost:5432/deskmate_test' MIGRATION_DATABASE_URL='postgresql+asyncpg://deskmate:deskmate@localhost:5432/deskmate_test' uv run pytest
 
 typecheck:
 	cd frontend && bun run typecheck

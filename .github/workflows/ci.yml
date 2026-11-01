@@ -17,8 +17,14 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Start Postgres
+        run: docker compose up -d --wait db
+
       - name: Backend tests (Seam 1)
         working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://deskmate_app:deskmate_app@localhost:5432/deskmate_test
+          MIGRATION_DATABASE_URL: postgresql+asyncpg://deskmate:deskmate@localhost:5432/deskmate_test
         run: |
           uv sync --frozen
           uv run pytest
