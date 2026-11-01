@@ -96,7 +96,14 @@
       "second_question": "This Conversation already has a question. Start a new Conversation to ask something else.",
       "no_question": "Type a question to start a Conversation.",
       "invalid_conversation": "This Conversation could not be started. Start a new Conversation.",
-      "generic": "The question could not be sent. Try again."
-    }
+      "generic": "The question could not be sent. Try again.",
+      "model_failed": "The Model could not finish the Answer. Try again.",
+      "not_retryable": "Only a stopped or failed Answer can be retried.",
+      "answer_in_progress": "An Answer is still being written.",
+      "answer_not_saved": "The Answer could not be saved. Try again."
+    },
+    "stopped": "Stopped",
+    "retry": "Retry",
+    "failed": "Failed: the Model could not finish this Answer."
   }
 }
