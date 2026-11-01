@@ -1,0 +1,75 @@
+{
+  "workspace": {
+    "name": "Agentic DeskMate",
+    "navLabel": "Không gian làm việc",
+    "nav": {
+      "dashboard": "Bảng điều khiển",
+      "chat": "Trò chuyện",
+      "agents": "Agent",
+      "knowledgeBases": "Cơ sở tri thức"
+    }
+  },
+  "placeholder": {
+    "comingSoon": "Khu vực này sẽ sớm ra mắt.",
+    "backToChat": "Quay lại Trò chuyện"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Bảng điều khiển",
+      "description": "Tổng quan về không gian làm việc của bạn sẽ nằm ở đây."
+    },
+    "agents": {
+      "title": "Agent",
+      "description": "Các Agent bạn làm việc cùng trong Trò chuyện sẽ được tạo và quản lý ở đây."
+    },
+    "knowledgeBases": {
+      "title": "Cơ sở tri thức",
+      "description": "Kiến thức mà các Agent có thể dùng sẽ nằm ở đây."
+    }
+  },
+  "chat": {
+    "inputPlaceholder": "Nhập câu hỏi...",
+    "sendButton": "Gửi",
+    "stopButton": "Dừng",
+    "disclaimer": "AI có thể mắc lỗi. Hãy kiểm tra thông tin quan trọng.",
+    "startTranscribeButton": "Ghi âm",
+    "cancelTranscribeButton": "Hủy",
+    "finishTranscribeButton": "Xong",
+    "addButton": "Thêm tệp đính kèm",
+    "toolsButton": "Công cụ",
+    "copyCode": "Sao chép",
+    "copiedCode": "Đã sao chép",
+    "copyMessage": "Sao chép",
+    "copyUserMessage": "Sao chép",
+    "editMessage": "Sửa",
+    "previousBranch": "Nhánh trước",
+    "nextBranch": "Nhánh sau",
+    "thumbsUp": "Phản hồi tốt",
+    "thumbsDown": "Phản hồi kém",
+    "feedbackCommentPlaceholder": "Thêm bình luận (không bắt buộc)",
+    "feedbackCommentSubmit": "Gửi bình luận",
+    "readAloud": "Đọc thành tiếng",
+    "regenerate": "Tạo lại",
+    "inspector": "Xem trong Inspector",
+    "inspectorDescription": "Mở tin nhắn này trong Inspector",
+    "inspectorLocalOnly": "Chỉ cục bộ",
+    "inspectorLocalOnlyDescription": "Chỉ hiển thị trên localhost hoặc máy cục bộ khi phát triển. Không bao giờ hiển thị trong môi trường thật.",
+    "inspectorTitle": "CopilotKit Inspector",
+    "inspectorHide": "Ẩn biểu tượng này",
+    "inspectorHideDescription": "Cho đến khi bạn tải lại trang này",
+    "toggleOpen": "Mở trò chuyện",
+    "toggleClose": "Đóng trò chuyện",
+    "scrollToBottom": "Cuộn xuống cuối",
+    "modalTitle": "Trò chuyện CopilotKit",
+    "welcome": "Tôi có thể giúp gì cho bạn hôm nay?",
+    "thinking": "Đang suy nghĩ…",
+    "slashMenu": "Lệnh dấu chéo",
+    "slashMenuEmpty": "Không tìm thấy lệnh nào",
+    "removeAttachment": "Xóa tệp đính kèm",
+    "playVideo": "Phát video",
+    "closePreview": "Đóng bản xem trước",
+    "close": "Đóng",
+    "openThreads": "Mở danh sách hội thoại",
+    "sidebar": "Thanh bên trò chuyện Copilot"
+  }
+}
