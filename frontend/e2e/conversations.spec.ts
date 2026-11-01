@@ -1,23 +1,14 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { readCredentials, signIn } from "./auth";
+import { openChat, readCredentials, signIn, submit } from "./auth";
 
 // These tests span several sign-ins and first compiles under Next dev, which outlast the default 30s in CI.
 test.describe.configure({ timeout: 120_000 });
 
-async function openChat(page: Page) {
-  const ready = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/copilotkit/info");
-  await page.goto("/chat");
-  await ready;
-}
-
 /** Ask in a fresh Conversation and return its ID, the AG-UI threadId the browser sent. */
 async function ask(page: Page, question: string): Promise<string> {
-  const run = page.waitForRequest((request) => request.method() === "POST" && request.url().endsWith("/agent/default/run"));
-  const composer = page.getByRole("textbox").first();
-  await composer.fill(question);
-  await composer.press("Enter");
-  const threadId = (await run).postDataJSON().threadId as string;
+  await page.getByRole("textbox").first().fill(question);
+  const threadId = await submit(page);
   await expect(page.getByText("The walking skeleton is working.")).toBeVisible({ timeout: 30_000 });
   return threadId;
 }
@@ -81,14 +72,15 @@ test("a second question is refused and the Chat page shows why", async ({ page }
   const threadId = await ask(page, "The only question");
 
   // The composer is locked, so send the second question into the same Conversation from a new page.
-  await page.getByRole("button", { name: "New conversation" }).click();
   await page.route("**/api/copilotkit/agent/default/run", async (route) => {
     const body = route.request().postDataJSON();
     await route.continue({ postData: JSON.stringify({ ...body, threadId }) });
   });
-  const composer = page.getByRole("textbox").first();
-  await composer.fill("A second question");
-  await composer.press("Enter");
+  const connected = page.waitForResponse((response) => response.url().endsWith("/agent/default/connect"));
+  await page.getByRole("button", { name: "New conversation" }).click();
+  await connected;
+  await page.getByRole("textbox").first().fill("A second question");
+  await submit(page);
 
   await expect(page.locator("p[role=alert]")).toContainText("This Conversation already has a question");
 });

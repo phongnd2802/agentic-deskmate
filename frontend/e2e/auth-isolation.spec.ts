@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { readCredentials, signIn } from "./auth";
+import { openChat, readCredentials, signIn, submit } from "./auth";
 
 test("a second session cannot read a run through /connect, and no session is refused", async ({ browser }) => {
   const { a, b } = readCredentials();
@@ -20,11 +20,10 @@ test("a second session cannot read a run through /connect, and no session is ref
     }
   });
 
-  await pageA.goto("/chat");
-  await pageA.waitForResponse((r) => new URL(r.url()).pathname === "/api/copilotkit/info");
+  await openChat(pageA);
   const composer = pageA.getByRole("textbox").first();
   await composer.fill("What is this skeleton?");
-  await composer.press("Enter");
+  await submit(pageA);
   await expect(pageA.getByText("The walking skeleton is working.")).toBeVisible({ timeout: 30000 });
   expect(threadId).toBeTruthy();
 

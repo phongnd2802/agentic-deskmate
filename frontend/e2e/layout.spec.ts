@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { readCredentials, signIn } from "./auth";
+import { openChat, readCredentials, signIn, submit } from "./auth";
 
 const WIDTHS = [375, 768, 1024, 1440];
 
@@ -20,12 +20,10 @@ for (const locale of ["en-US", "vi-VN"]) {
       test.setTimeout(120_000);
       const { a } = readCredentials();
       await signIn(page, a);
-      await page.goto("/chat");
+      await openChat(page);
       const composer = page.getByRole("textbox").first();
       await composer.fill("Layout check");
-      const run = page.waitForRequest((request) => request.url().endsWith("/agent/default/run"));
-      await composer.press("Enter");
-      const threadId = (await run).postDataJSON().threadId as string;
+      const threadId = await submit(page);
       await expect(page.getByRole("status")).toBeVisible({ timeout: 30_000 });
 
       for (const width of WIDTHS) {

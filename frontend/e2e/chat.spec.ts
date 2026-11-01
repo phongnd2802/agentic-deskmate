@@ -1,15 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-import { readCredentials, signIn } from "./auth";
+import { openChat, readCredentials, signIn, submit } from "./auth";
 
 const FINAL_LINE = "The walking skeleton is working.";
 
 test("a question streams a Markdown Answer with formatted code", async ({ page }) => {
   const { a } = readCredentials();
   await signIn(page, a);
-  const ready = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/copilotkit/info");
-  await page.goto("/chat");
-  await ready;
+  await openChat(page);
 
   const composer = page.getByRole("textbox").first();
   await composer.fill("What is this skeleton?");
@@ -42,7 +40,7 @@ test("a question streams a Markdown Answer with formatted code", async ({ page }
     { finalLine: FINAL_LINE },
   );
 
-  await composer.press("Enter");
+  await submit(page);
   const states = await answerStates;
 
   const partialStates = states.filter((state) => !state.includes(FINAL_LINE));
