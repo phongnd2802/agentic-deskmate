@@ -2,6 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { readCredentials, signIn } from "./auth";
 
+// These tests span several sign-ins and first compiles under Next dev, which outlast the default 30s in CI.
+test.describe.configure({ timeout: 120_000 });
+
 async function openChat(page: Page) {
   const ready = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/copilotkit/info");
   await page.goto("/chat");
