@@ -1,0 +1,105 @@
+{
+  "final-csp-on": {
+    "query": "",
+    "report": {
+      "origin": "null",
+      "beacon": "queued",
+      "fetch": "blocked: Failed to fetch",
+      "csp:connect-src:http://localhost:8100/evil/fetch": "violation",
+      "csp:connect-src:http://localhost:8100/evil/xhr": "violation",
+      "xhr": "blocked",
+      "csp:connect-src:ws://localhost:8100/evil/ws": "violation",
+      "ws": "blocked",
+      "csp:connect-src:http://localhost:8100/evil/beacon": "violation",
+      "csp:script-src-elem:https://cdnjs.cloudflare.com/ajax/libs/lodash.js": "violation",
+      "other-cdn": "blocked",
+      "csp:img-src:http://localhost:8100/evil/img-js?d=secret": "violation",
+      "img-remote": "blocked",
+      "img-data": "loaded",
+      "img-blob": "loaded",
+      "chartjs": "loaded v4.4.4"
+    },
+    "canvasPainted": true,
+    "evilHits": []
+  },
+  "final-csp-off": {
+    "query": "csp=off",
+    "report": {
+      "origin": "null",
+      "beacon": "queued",
+      "img-data": "loaded",
+      "fetch": "ALLOWED",
+      "img-blob": "loaded",
+      "xhr": "ALLOWED",
+      "img-remote": "blocked",
+      "ws": "blocked",
+      "chartjs": "loaded v4.4.4",
+      "other-cdn": "ALLOWED"
+    },
+    "canvasPainted": true,
+    "evilHits": [
+      "img-tag",
+      "fetch",
+      "xhr",
+      "ws",
+      "img-js"
+    ]
+  },
+  "preview-csp-off": {
+    "query": "csp=off",
+    "evilHits": [
+      "preview-img-tag",
+      "preview-img",
+      "preview-fetch",
+      "preview-img-tag",
+      "preview-fetch",
+      "preview-img",
+      "preview-img-tag",
+      "preview-fetch",
+      "preview-img"
+    ],
+    "frames": 1
+  },
+  "preview-csp-on": {
+    "query": "",
+    "evilHits": [],
+    "frames": 1
+  },
+  "navigation-csp-on": {
+    "evilHits": [
+      "navigation"
+    ],
+    "since": [
+      {
+        "path": "navigation",
+        "query": "d=secret"
+      }
+    ],
+    "frames": [
+      "http://localhost:8100/evil/navigation?d=secret"
+    ]
+  },
+  "q7": {
+    "log": "remote: openLink\npostMessage: sent to parent\nparentDoc: blocked SecurityError\ntopNav: blocked SecurityError\ndirectRun: blocked Failed to fetch\nopenLink: {\"ok\":false}\nopenLink: {\"ok\":true}\nsendPrompt: err sendPrompt is not registered\n",
+    "dialogs": [
+      "Open this link?\nhttps://example.com/a?b=1",
+      "Open this link?\nhttps://example.com/a?b=1"
+    ],
+    "popups": [
+      ""
+    ],
+    "contextDescriptions": [
+      "Sandbox functions available in generated sandboxed UI code. Call via: await Websandbox.connection.remote.<functionName>(args)"
+    ],
+    "runsBefore": 1,
+    "runsAfter": 1,
+    "backendRunsBefore": 1,
+    "backendRunsAfter": 1,
+    "evilHits": [],
+    "errors": []
+  },
+  "q7NoFunctions": {
+    "log": "remote: (none)\npostMessage: sent to parent\nparentDoc: blocked SecurityError\ntopNav: blocked SecurityError\ndirectRun: blocked Failed to fetch\nsendPrompt: err sendPrompt is not registered\n",
+    "backendRuns": 1
+  }
+}

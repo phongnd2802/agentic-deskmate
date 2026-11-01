@@ -1,0 +1,100 @@
+{
+  "control": {
+    "prompt": "show a table",
+    "clientSent": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "modelSaw": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "instructionsHead": "route=None; model=model-a",
+    "renderedFrame": 0,
+    "renderedTable": 1,
+    "parts": [
+      "Here is the table. ",
+      "render_a2ui"
+    ]
+  },
+  "ogui-only": {
+    "prompt": "route:ogui show a table",
+    "clientSent": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "modelSaw": [
+      "generateSandboxedUi"
+    ],
+    "instructionsHead": "route=ogui; model=model-a",
+    "renderedFrame": 0,
+    "renderedTable": 0,
+    "parts": [
+      "[render_a2ui not offered] tools=['generateSandboxedUi']"
+    ]
+  },
+  "ogui-only-slider": {
+    "prompt": "route:ogui slider",
+    "clientSent": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "modelSaw": [
+      "generateSandboxedUi"
+    ],
+    "instructionsHead": "route=ogui; model=model-a",
+    "renderedFrame": 1,
+    "renderedTable": 0,
+    "parts": [
+      "Here is a slider. ",
+      "generateSandboxedUi"
+    ]
+  },
+  "a2ui-only": {
+    "prompt": "route:a2ui show a table",
+    "clientSent": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "modelSaw": [
+      "render_a2ui"
+    ],
+    "instructionsHead": "route=a2ui; model=model-a",
+    "renderedFrame": 0,
+    "renderedTable": 1,
+    "parts": [
+      "Here is the table. ",
+      "render_a2ui"
+    ]
+  },
+  "a2ui-only-slider": {
+    "prompt": "route:a2ui slider",
+    "clientSent": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "modelSaw": [
+      "render_a2ui"
+    ],
+    "instructionsHead": "route=a2ui; model=model-a",
+    "renderedFrame": 0,
+    "renderedTable": 0,
+    "parts": [
+      "[generateSandboxedUi not offered] tools=['render_a2ui']"
+    ]
+  },
+  "none": {
+    "prompt": "route:none slider",
+    "clientSent": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "modelSaw": [],
+    "instructionsHead": "route=none; model=model-a",
+    "renderedFrame": 0,
+    "renderedTable": 0,
+    "parts": [
+      "[generateSandboxedUi not offered] tools=[]"
+    ]
+  }
+}

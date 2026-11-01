@@ -1,0 +1,62 @@
+{
+  "before": "10",
+  "afterSlider": "73",
+  "afterButton": "78",
+  "runsBefore": 2,
+  "runsAfter": 2,
+  "sandbox": "allow-scripts ",
+  "allowAttr": "",
+  "backendRuns": [
+    {
+      "follow_up": false,
+      "roles": [
+        "user"
+      ]
+    },
+    {
+      "follow_up": true,
+      "roles": [
+        "user",
+        "assistant",
+        "tool"
+      ]
+    }
+  ],
+  "thread": "f05a00ff-94f4-486c-9775-ab9c84f17c4f",
+  "agentMessages": [
+    {
+      "role": "user",
+      "content": "draw a slider"
+    },
+    {
+      "role": "assistant",
+      "content": "Here is a slider. ",
+      "toolCalls": [
+        "generateSandboxedUi"
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "UI generated"
+    },
+    {
+      "role": "activity",
+      "activityType": "open-generative-ui"
+    },
+    {
+      "role": "assistant",
+      "content": "(follow-up after tool result)"
+    }
+  ],
+  "net": [
+    "GET /api/copilotkit/info",
+    "GET /api/copilotkit/info",
+    "POST /api/copilotkit/agent/default/connect",
+    "POST /api/copilotkit/agent/default/run",
+    "POST /api/copilotkit/agent/default/run"
+  ],
+  "console": [
+    "warning: Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+}

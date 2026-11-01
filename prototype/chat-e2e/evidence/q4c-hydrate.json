@@ -1,0 +1,30 @@
+{
+  "delay0": {
+    "frames": 0,
+    "body": "AI can make mistakes. Please verify important information.",
+    "slider": null,
+    "frameHeight": null,
+    "composer": 1,
+    "net": [
+      "GET /api/copilotkit/info",
+      "GET /api/backend/answers/518a61cd-4dcd-456d-bf56-d284d559558f",
+      "POST /api/copilotkit/agent/default/connect"
+    ],
+    "backendRuns": 0,
+    "errors": []
+  },
+  "delay4000": {
+    "frames": 1,
+    "body": "(stored question)\n\nHere is a tall one.\n\nAI can make mistakes. Please verify important information.",
+    "slider": "33",
+    "frameHeight": 60,
+    "composer": 1,
+    "net": [
+      "GET /api/copilotkit/info",
+      "GET /api/backend/answers/0dcf1645-d23e-41b0-8fb1-5d47270432b6",
+      "POST /api/copilotkit/agent/default/connect"
+    ],
+    "backendRuns": 0,
+    "errors": []
+  }
+}

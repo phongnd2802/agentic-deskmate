@@ -1,0 +1,71 @@
+{
+  "filtered-tool-called-anyway": {
+    "prompt": "route:none hallucinate",
+    "modelCalls": [
+      [],
+      []
+    ],
+    "frames": 1,
+    "frameShowsSlider": 1,
+    "isRunning": false,
+    "body": "route:none hallucinate\n\nCalling an unoffered tool.\n\n(follow-up after tool result)\n\nAI can make mistakes. Please verify important information.",
+    "stored": [
+      [
+        "Calling an unoffered tool. ",
+        "generateSandboxedUi",
+        "(follow-up after tool result)"
+      ]
+    ],
+    "errors": []
+  },
+  "a2ui-unknown-component": {
+    "prompt": "badtable",
+    "modelCalls": [
+      [
+        "generateSandboxedUi",
+        "render_a2ui"
+      ]
+    ],
+    "frames": 0,
+    "frameShowsSlider": 0,
+    "isRunning": false,
+    "body": "badtable\n\nBad component next.\n\nUnknown component: Nope\nAI can make mistakes. Please verify important information.",
+    "stored": [
+      [
+        "Bad component next. ",
+        "render_a2ui"
+      ]
+    ],
+    "errors": []
+  },
+  "ogui-no-html": {
+    "prompt": "nohtml",
+    "modelCalls": [
+      [
+        "generateSandboxedUi",
+        "render_a2ui"
+      ]
+    ],
+    "frames": 0,
+    "frameShowsSlider": 0,
+    "isRunning": false,
+    "body": "nohtml\n\nNo html next.\n\nAI can make mistakes. Please verify important information.",
+    "stored": [
+      [
+        "No html next. ",
+        "generateSandboxedUi"
+      ]
+    ],
+    "errors": []
+  },
+  "reopen-stopped-answer": {
+    "status": "stopped",
+    "text": [
+      "Partial text before the tool."
+    ],
+    "partial": [
+      "[generateSandboxedUi: stopped before the arguments were complete]"
+    ],
+    "frames": 0
+  }
+}

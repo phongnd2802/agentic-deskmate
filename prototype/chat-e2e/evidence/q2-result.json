@@ -1,0 +1,93 @@
+{
+  "rows": 3,
+  "text": "Sales by region\nRegion\tSales\nNorth\t120\nSouth\t340\nCentral\t90\nscripted",
+  "backendRuns": [
+    {
+      "follow_up": false,
+      "roles": [
+        "user"
+      ],
+      "tools": [
+        "generateSandboxedUi",
+        "render_a2ui"
+      ]
+    }
+  ],
+  "onComplete": [
+    [
+      {
+        "type": "text",
+        "text": "Here is the table. "
+      },
+      {
+        "type": "tool",
+        "name": "render_a2ui",
+        "args": "{\"surfaceId\": \"sales\", \"components\": [{\"id\": \"root\", \"component\": \"Table\", \"title\": \"Sales by region\", \"columns\": [\"Region\", \"Sales\"], \"rows\": [[\"North\", \"120\"], [\"South\", \"340\"], [\"Central\", \"90\"]], \"source\": \"scripted\"}]}"
+      }
+    ]
+  ],
+  "agentMessages": [
+    {
+      "role": "user"
+    },
+    {
+      "role": "assistant",
+      "toolCalls": [
+        "render_a2ui"
+      ]
+    },
+    {
+      "role": "tool"
+    },
+    {
+      "role": "activity",
+      "activityType": "a2ui-surface",
+      "content": {
+        "a2ui_operations": [
+          {
+            "version": "v0.9",
+            "createSurface": {
+              "surfaceId": "sales",
+              "catalogId": "copilotkit://deskmate-tables"
+            }
+          },
+          {
+            "version": "v0.9",
+            "updateComponents": {
+              "surfaceId": "sales",
+              "components": [
+                {
+                  "id": "root",
+                  "component": "Table",
+                  "title": "Sales by region",
+                  "columns": [
+                    "Region",
+                    "Sales"
+                  ],
+                  "rows": [
+                    [
+                      "North",
+                      "120"
+                    ],
+                    [
+                      "South",
+                      "340"
+                    ],
+                    [
+                      "Central",
+                      "90"
+                    ]
+                  ],
+                  "source": "scripted"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "console": [
+    "warning: Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information."
+  ]
+}

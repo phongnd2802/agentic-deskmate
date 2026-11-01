@@ -1,0 +1,58 @@
+{
+  "trial1": {
+    "thread": "b06950bb-7035-4e63-8b4c-fdde3a9b59ef",
+    "stored": [
+      {
+        "status": "stopped",
+        "source": "on_cancel",
+        "textChars": 160
+      }
+    ],
+    "events": [
+      {
+        "kind": "client_disconnected"
+      },
+      {
+        "kind": "model_stream_interrupted",
+        "exc": "CancelledError",
+        "chunks_sent": 20
+      },
+      {
+        "kind": "on_cancel",
+        "exc": "The agent run was cancelled."
+      },
+      {
+        "kind": "stream_tee_closed",
+        "status": "finished"
+      }
+    ]
+  },
+  "trial2": {
+    "thread": "5ac32651-a1e0-4a19-a9e3-98995425e379",
+    "stored": [
+      {
+        "status": "stopped",
+        "source": "on_cancel",
+        "textChars": 160
+      }
+    ],
+    "events": [
+      {
+        "kind": "client_disconnected"
+      },
+      {
+        "kind": "model_stream_interrupted",
+        "exc": "CancelledError",
+        "chunks_sent": 20
+      },
+      {
+        "kind": "on_cancel",
+        "exc": "The agent run was cancelled."
+      },
+      {
+        "kind": "stream_tee_closed",
+        "status": "finished"
+      }
+    ]
+  }
+}

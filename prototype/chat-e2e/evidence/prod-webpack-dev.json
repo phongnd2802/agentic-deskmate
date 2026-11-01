@@ -1,0 +1,10 @@
+{
+  "frames": 0,
+  "errors": [
+    "error: [OpenGenerativeUI] Failed to load sandbox module: TypeError: Object.defineProperty called on non-object\n    at Object.defineProperty (<anonymous>)\n    at __webpack_require__.r (http://localhost",
+    "error: [OpenGenerativeUI] Failed to load sandbox module: TypeError: Object.defineProperty called on non-object\n    at Object.defineProperty (<anonymous>)\n    at __webpack_require__.r (http://localhost"
+  ],
+  "tableRows": 3,
+  "pickerInsideComposer": 1,
+  "pickerModelAtFastAPI": "model-b"
+}

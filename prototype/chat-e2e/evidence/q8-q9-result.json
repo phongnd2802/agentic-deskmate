@@ -1,0 +1,106 @@
+{
+  "cookie-default-policy": {
+    "cookieAtFastAPI": null,
+    "modelIdAtFastAPI": "model-a"
+  },
+  "cookie-allow-policy": {
+    "cookieAtFastAPI": "session=user-a-session",
+    "modelIdAtFastAPI": "model-a"
+  },
+  "modelPicker": {
+    "modelIdAtFastAPI": "model-b",
+    "placeholder": "Nhập câu hỏi...",
+    "disclaimer": true
+  },
+  "lock-text": {
+    "locked": 1,
+    "textareas": 0,
+    "frames": 0
+  },
+  "lock-ogui": {
+    "locked": 1,
+    "textareas": 0,
+    "frames": 1
+  },
+  "reject-event": {
+    "rejected": 1,
+    "errorShownByPage": [
+      "agent_run_error_event This Conversation already has an Answer. Start a new Conversation."
+    ],
+    "banner": [],
+    "composerUsable": true,
+    "isRunning": false,
+    "bodyText": "agent_run_error_event This Conversation already has an Answer. Start a new Conversation.\nhello\n\nPlain text answer. tools=['generateSandboxedUi', 'render_a2ui']\n\nsecond question\nAI can make mistakes. P",
+    "console": [
+      "error: [CopilotKit] Error (agent_run_error_event): Error: This Conversation already has an Answer. Start a new Conversation.\n    at Object.o"
+    ]
+  },
+  "reject-http": {
+    "rejected": 1,
+    "errorShownByPage": [
+      "agent_run_error_event HTTP 409: {\"detail\":\"This Conversation already has an Answer. Start a new Conversation.\"}"
+    ],
+    "banner": [],
+    "composerUsable": true,
+    "isRunning": false,
+    "bodyText": "agent_run_error_event HTTP 409: {\"detail\":\"This Conversation already has an Answer. Start a new Conversation.\"}\nhello\n\nPlain text answer. tools=['generateSandboxedUi', 'render_a2ui']\n\nsecond question\n",
+    "console": [
+      "error: [CopilotKit] Error (agent_run_error_event): Error: HTTP 409: {\"detail\":\"This Conversation already has an Answer. Start a new Conversa"
+    ]
+  },
+  "single-turn-with-followup": {
+    "runs": [
+      false,
+      true
+    ],
+    "rejected": 0,
+    "error": []
+  },
+  "identifyUser": {
+    "userB": {
+      "status": 200,
+      "leaked": false,
+      "sample": ""
+    },
+    "owner": {
+      "status": 200,
+      "sees": true
+    },
+    "stopAsB": {
+      "status": 200,
+      "body": "{\"stopped\":false,\"message\":\"No active run for thread '268fa8ef-a298-440b-8395-7f6ffac21b00'.\"}"
+    },
+    "anonymous": {
+      "status": 400,
+      "leaked": false
+    }
+  },
+  "reopenAutosizeFixed": {
+    "height": 174
+  },
+  "hydrateAfterConnect": {
+    "frames": 1,
+    "body": "(stored question)\n\nHere is a tall one.\n\nAI can make mistakes. Please verify important information.",
+    "slider": "33",
+    "composer": 1,
+    "net": [
+      "GET /api/copilotkit/info",
+      "GET /api/backend/answers/3ba2d895-8a88-4387-9d0e-6e223f7868e3",
+      "POST /api/copilotkit/agent/default/connect"
+    ]
+  },
+  "navigationHostCsp": {
+    "evilHits": [],
+    "frameCount": 1,
+    "frames": [
+      "http://localhost:3100/?nofollow=1&hostcsp=1",
+      "chrome-error://chromewebdata/"
+    ],
+    "violations": [
+      "error: Framing 'http://localhost:8100/' violates the following Content Security Policy directive: \"frame-src 'none'\". The request has been blocked.\n"
+    ]
+  },
+  "sliderUnderHostCsp": {
+    "value": "64"
+  }
+}

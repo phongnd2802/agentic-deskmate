@@ -1,0 +1,46 @@
+{
+  "nofollow": {
+    "runs": 1,
+    "backend": [
+      false
+    ],
+    "tools": [
+      "generateSandboxedUi",
+      "render_a2ui"
+    ],
+    "slider": "44",
+    "liveFrameHeight": 174,
+    "messages": [
+      "user",
+      "assistant",
+      "tool",
+      "activity:open-generative-ui"
+    ],
+    "warnings": [
+      "warning: Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "warning: Tool 'generateSandboxedUi' already exists for agent 'global'. Overriding with latest registration."
+    ]
+  },
+  "reopenAutosize": {
+    "height": 174
+  },
+  "hydrateFresh": {
+    "frames": 0,
+    "body": "AI can make mistakes. Please verify important information.",
+    "slider": null,
+    "composerPresent": 1,
+    "net": [
+      "GET /api/copilotkit/info",
+      "GET /api/backend/answers/4cce3cb3-0547-4d7f-8749-73a4e3831d13",
+      "POST /api/copilotkit/agent/default/connect"
+    ],
+    "backendRuns": 0,
+    "errors": []
+  },
+  "crossUserConnect": {
+    "status": 200,
+    "leaked": true,
+    "sample": "data: {\"type\":\"RUN_STARTED\",\"timestamp\":1793532708479,\"threadId\":\"8cbbf26b-1bbe-4974-b398-7b37527f9a6d\",\"runId\":\"906b2d3d-ec37-4fb7-b4ef-5099a822e22f\",\"protocolVersion\":\"1.0\",\"input\":{\"threadId\":\"8cbbf26b-1bbe-4974-b398-7b37527f9a6d\",\"runId\":\"906b2d3d-ec37-4fb7-b4ef-5099a822e22f\",\"protocolVersion\":\"1.0\",\"state\":{},\"messages\":[{\"id\":\"9441a14d-9d1e-45d9-981a-82cb1ce58902\",\"role\":\"user\",\"content\":\"my"
+  }
+}

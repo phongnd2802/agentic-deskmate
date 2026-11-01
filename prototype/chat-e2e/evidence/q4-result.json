@@ -1,0 +1,155 @@
+{
+  "thread": "1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+  "thread2": "39a87bcf-c556-49b0-b61b-b30779d7fa0c",
+  "onComplete": [
+    {
+      "t": 1793532616.744,
+      "kind": "on_complete",
+      "thread": "1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+      "run": "8833c06b-9761-4188-943a-f2a5f88b7ef8",
+      "parts": [
+        {
+          "type": "text",
+          "text": "Here is a slider. "
+        },
+        {
+          "type": "tool",
+          "name": "generateSandboxedUi",
+          "args": "{\"initialHeight\": 180, \"placeholderMessages\": [\"Building slider\"], \"css\": \"body{font-family:sans-serif;padding:12px} #val{font-size:28px;font-weight:700}\", \"html\": \"<head></head><body><h3>Local control</h3><input id=\\\"s\\\" type=\\\"range\\\" min=\\\"0\\\" max=\\\"100\\\" value=\\\"10\\\" aria-label=\\\"value\\\"><div>value: <span id=\\\"val\\\">10</span></div><button id=\\\"b\\\">add 5</button></body>\", \"jsFunctions\": \"function setVal(v){document.getElementById('s').value=v;document.getElementById('val').textContent=v}\", \"jsExpressions\": [\"document.getElementById('s').addEventListener('input',e=>setVal(e.target.value))\", \"document.getElementById('b').addEventListener('click',()=>setVal(Number(document.getElementById('s').value)+5))\"]}"
+        }
+      ]
+    },
+    {
+      "t": 1793532617.057,
+      "kind": "on_complete",
+      "thread": "1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+      "run": "e4feac85-f6ba-48e1-b75b-bb3a28ebbcf2",
+      "parts": [
+        {
+          "type": "text",
+          "text": "(follow-up after tool result)"
+        }
+      ]
+    }
+  ],
+  "tee": [
+    {
+      "t": 1793532616.744,
+      "kind": "stream_tee_closed",
+      "thread": "1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+      "run": "8833c06b-9761-4188-943a-f2a5f88b7ef8",
+      "status": "finished",
+      "parts": [
+        {
+          "type": "text",
+          "text": "Here is a slider. "
+        },
+        {
+          "type": "tool",
+          "name": "generateSandboxedUi",
+          "args": "{\"initialHeight\": 180, \"placeholderMessages\": [\"Building slider\"], \"css\": \"body{font-family:sans-serif;padding:12px} #val{font-size:28px;font-weight:700}\", \"html\": \"<head></head><body><h3>Local control</h3><input id=\\\"s\\\" type=\\\"range\\\" min=\\\"0\\\" max=\\\"100\\\" value=\\\"10\\\" aria-label=\\\"value\\\"><div>value: <span id=\\\"val\\\">10</span></div><button id=\\\"b\\\">add 5</button></body>\", \"jsFunctions\": \"function setVal(v){document.getElementById('s').value=v;document.getElementById('val').textContent=v}\", \"jsExpressions\": [\"document.getElementById('s').addEventListener('input',e=>setVal(e.target.value))\", \"document.getElementById('b').addEventListener('click',()=>setVal(Number(document.getElementById('s').value)+5))\"]}"
+        }
+      ]
+    },
+    {
+      "t": 1793532617.058,
+      "kind": "stream_tee_closed",
+      "thread": "1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+      "run": "e4feac85-f6ba-48e1-b75b-bb3a28ebbcf2",
+      "status": "finished",
+      "parts": [
+        {
+          "type": "text",
+          "text": "(follow-up after tool result)"
+        }
+      ]
+    }
+  ],
+  "stored": [
+    {
+      "id": "00ff12ff-8710-4748-9760-b470f3d9b968",
+      "conversationId": "1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+      "runId": "8833c06b-9761-4188-943a-f2a5f88b7ef8",
+      "status": "complete",
+      "modelId": "model-a",
+      "source": "on_complete",
+      "parts": [
+        {
+          "type": "text",
+          "text": "Here is a slider. "
+        },
+        {
+          "type": "tool",
+          "name": "generateSandboxedUi",
+          "args": "{\"initialHeight\": 180, \"placeholderMessages\": [\"Building slider\"], \"css\": \"body{font-family:sans-serif;padding:12px} #val{font-size:28px;font-weight:700}\", \"html\": \"<head></head><body><h3>Local control</h3><input id=\\\"s\\\" type=\\\"range\\\" min=\\\"0\\\" max=\\\"100\\\" value=\\\"10\\\" aria-label=\\\"value\\\"><div>value: <span id=\\\"val\\\">10</span></div><button id=\\\"b\\\">add 5</button></body>\", \"jsFunctions\": \"function setVal(v){document.getElementById('s').value=v;document.getElementById('val').textContent=v}\", \"jsExpressions\": [\"document.getElementById('s').addEventListener('input',e=>setVal(e.target.value))\", \"document.getElementById('b').addEventListener('click',()=>setVal(Number(document.getElementById('s').value)+5))\"]}"
+        }
+      ]
+    },
+    {
+      "id": "482e5279-fa06-4c62-b42e-77a94f23052a",
+      "conversationId": "1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+      "runId": "e4feac85-f6ba-48e1-b75b-bb3a28ebbcf2",
+      "status": "complete",
+      "modelId": "model-a",
+      "source": "on_complete",
+      "parts": [
+        {
+          "type": "text",
+          "text": "(follow-up after tool result)"
+        }
+      ]
+    }
+  ],
+  "reopen:ogui": {
+    "frames": 1,
+    "slider": "55",
+    "tableRows": 0,
+    "bodyText": "Stored Conversation\ncomplete\n\nHere is a slider.\n\ncomplete\n\n(follow-up after tool result)",
+    "frameHeight": 174,
+    "net": [
+      "GET /api/backend/answers/1dca6aff-46f9-499e-a0cd-3b2ac4365052"
+    ],
+    "backendRunsDuringView": 0,
+    "errors": []
+  },
+  "reopen:table": {
+    "frames": 0,
+    "slider": null,
+    "tableRows": 3,
+    "bodyText": "Stored Conversation\ncomplete\n\nHere is the table.\n\nSales by region\nRegion\tSales\nNorth\t120\nSouth\t340\nCentral\t90\nscripted",
+    "frameHeight": null,
+    "net": [
+      "GET /api/backend/answers/39a87bcf-c556-49b0-b61b-b30779d7fa0c"
+    ],
+    "backendRunsDuringView": 0,
+    "errors": []
+  },
+  "hydrate:ogui": {
+    "frames": 1,
+    "slider": "55",
+    "tableRows": 0,
+    "bodyText": "draw a slider\n\nHere is a slider.\n\n(follow-up after tool result)\n\nAI can make mistakes. Please verify important information.",
+    "frameHeight": 180,
+    "net": [
+      "GET /api/copilotkit/info",
+      "GET /api/backend/answers/1dca6aff-46f9-499e-a0cd-3b2ac4365052",
+      "POST /api/copilotkit/agent/default/connect"
+    ],
+    "backendRunsDuringView": 0,
+    "errors": []
+  },
+  "hydrate:table": {
+    "frames": 0,
+    "slider": null,
+    "tableRows": 3,
+    "bodyText": "show a table\n\nHere is the table.\n\nSales by region\nRegion\tSales\nNorth\t120\nSouth\t340\nCentral\t90\nscripted\nAI can make mistakes. Please verify important information.",
+    "frameHeight": null,
+    "net": [
+      "GET /api/copilotkit/info",
+      "GET /api/backend/answers/39a87bcf-c556-49b0-b61b-b30779d7fa0c",
+      "POST /api/copilotkit/agent/default/connect"
+    ],
+    "backendRunsDuringView": 0,
+    "errors": []
+  }
+}
