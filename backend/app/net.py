@@ -76,6 +76,7 @@ class _CheckedBackend(AutoBackend):
     async def connect_tcp(self, host, port, *args, **kwargs):
         # The connection goes to the address that was just checked, not to a second lookup of the name, so DNS
         # rebinding cannot swap it. TLS still verifies the certificate against the original host name.
+        # shortcut: only the first address is tried, add fallback if a dual-stack Provider fails from a host with broken IPv6.
         [address, *_] = await resolve_allowed(host, port)
         return await super().connect_tcp(address, port, *args, **kwargs)
 

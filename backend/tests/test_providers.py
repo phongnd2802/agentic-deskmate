@@ -126,7 +126,7 @@ async def test_private_and_loopback_addresses_are_refused_with_a_clear_message(p
 
 
 async def test_an_allowlisted_network_is_accepted(people, monkeypatch):
-    monkeypatch.setattr(settings, "provider_allowed_networks", "127.0.0.0/8, 10.0.0.0/8")
+    monkeypatch.setattr(settings, "provider_allowed_networks", "127.0.0.0/8, ::1/128, 10.0.0.0/8")
     for url in ("http://127.0.0.1:11434/v1", "http://10.1.2.3/v1", "http://localhost/v1", "http://[::ffff:127.0.0.1]/v1"):
         response = await people["admin"].post("/providers", json={**PROVIDER, "name": url, "base_url": url})
         assert response.status_code == 201, (url, response.text)
@@ -268,7 +268,7 @@ async def test_a_real_call_goes_only_to_allowed_addresses_and_never_leaks_the_ke
     monkeypatch.setattr(settings, "scripted_model", False)
     monkeypatch.setattr(settings, "provider_allowed_networks", "127.0.0.0/8")
     admin, member = people["admin"], people["member"]
-    created = await admin.post("/providers", json={**PROVIDER, "name": "Local", "api_type": api_type, "base_url": f"http://localhost:{port}/v1", "models": [{"model_id": "local-model"}]})
+    created = await admin.post("/providers", json={**PROVIDER, "name": "Local", "api_type": api_type, "base_url": f"http://127.0.0.1:{port}/v1", "models": [{"model_id": "local-model"}]})
     assert created.status_code == 201, created.text
     local = created.json()["models"][0]["id"]
 
