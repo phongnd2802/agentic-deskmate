@@ -1,4 +1,4 @@
-import { Bot, BookOpen, LayoutDashboard, MessageSquare } from "lucide-react";
+import { Bot, BookOpen, LayoutDashboard, MessageSquare, Settings } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
@@ -19,7 +19,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   return (
     <div className="flex h-dvh">
-      <Sidebar name={t("name")} navLabel={t("navLabel")} items={items} user={user} />
+      <Sidebar name={t("name")} navLabel={t("navLabel")} items={items} user={user} settings={user.role === "admin" ? { href: "/settings", label: t("nav.settings"), icon: <Settings aria-hidden /> } : undefined} />
       <main className="min-w-0 flex-1 overflow-auto">{children}</main>
     </div>
   );

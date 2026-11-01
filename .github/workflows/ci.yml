@@ -41,6 +41,8 @@ jobs:
         run: bun run typecheck
 
       - name: Start the stack
+        env:
+          SCRIPTED_MODEL: "true"
         run: docker compose up -d --build --wait
 
       - name: Install Chromium

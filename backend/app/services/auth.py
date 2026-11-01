@@ -15,7 +15,7 @@ from uuid import UUID
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
-from fastapi import HTTPException, Request
+from fastapi import Depends, HTTPException, Request
 from sqlalchemy import delete, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -122,3 +122,9 @@ async def current_user(request: Request) -> CurrentUser:
             if found is None:
                 raise HTTPException(status_code=401, detail="Not signed in")
             return await _scoped_user(db, found)
+
+
+async def admin_user(user: CurrentUser = Depends(current_user)) -> CurrentUser:
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admins only")
+    return user

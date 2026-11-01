@@ -24,6 +24,12 @@ services:
       SESSION_COOKIE_SECURE: "false" # local development is plain HTTP
       DATABASE_URL: postgresql+asyncpg://deskmate_app:deskmate_app@db:5432/deskmate
       MIGRATION_DATABASE_URL: postgresql+asyncpg://deskmate:deskmate@db:5432/deskmate
+      # Development only: this fallback key is public, so it protects nothing. Set ENCRYPTION_KEY wherever real Provider keys live.
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-emLWnCeO_xnfiCM5LlS_17e55zzNxfbfBpCsrgjLDYs=}
+      # Private networks Providers may use, e.g. 192.168.0.0/16 for a local Ollama. Empty blocks them all.
+      PROVIDER_ALLOWED_NETWORKS: ${PROVIDER_ALLOWED_NETWORKS:-}
+      # The browser tests answer from the scripted Model (make test-e2e); otherwise Providers are called.
+      SCRIPTED_MODEL: ${SCRIPTED_MODEL:-false}
     volumes:
       - ./backend:/app
     depends_on:

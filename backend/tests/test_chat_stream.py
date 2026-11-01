@@ -4,8 +4,6 @@ import json
 
 import httpx2
 
-from app.main import app
-
 
 RUN_INPUT = {
     "threadId": "6f1c2b0e-3d7a-4b8e-9a51-0c7d2f4e8a11",
@@ -18,13 +16,9 @@ RUN_INPUT = {
 }
 
 
-async def _sign_in(client: httpx2.AsyncClient, email: str, password: str) -> None:
-    response = await client.post("/auth/sign-in", json={"email": email, "password": password})
-    assert response.status_code == 200, response.text
-
-
 async def ask_ag_ui(client: httpx2.AsyncClient) -> list[dict]:
-    async with client.stream("POST", "/agent", json=RUN_INPUT) as response:
+    run = {**RUN_INPUT, "forwardedProps": {"modelId": client.model_id}}
+    async with client.stream("POST", "/agent", json=run) as response:
         assert response.status_code == 200
         assert response.headers["content-type"].startswith("text/event-stream")
         lines = [line async for line in response.aiter_lines()]
@@ -34,12 +28,8 @@ async def ask_ag_ui(client: httpx2.AsyncClient) -> list[dict]:
     return events
 
 
-async def test_answer_streams_from_the_scripted_model(admin_credentials):
-    email, password = admin_credentials
-    transport = httpx2.ASGITransport(app=app)
-    async with httpx2.AsyncClient(transport=transport, base_url="http://test") as client:
-        await _sign_in(client, email, password)
-        events = await ask_ag_ui(client)
+async def test_answer_streams_from_the_scripted_model(people):
+    events = await ask_ag_ui(people["member"])
 
     deltas = [event["delta"] for event in events if event["type"] == "TEXT_MESSAGE_CONTENT"]
     assert len(deltas) > 1, "the Answer must arrive in pieces, not one buffered blob"

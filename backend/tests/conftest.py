@@ -5,11 +5,18 @@ import os
 
 # The test client talks plain HTTP, which would drop a Secure cookie.
 os.environ.setdefault("SESSION_COOKIE_SECURE", "false")
+# A throwaway Fernet key, and the scripted Model in place of a real LLM.
+os.environ.setdefault("ENCRYPTION_KEY", "Zm9yLXRlc3RzLW9ubHktMzItYnl0ZXMta2V5LTAwMDA=")
+os.environ.setdefault("SCRIPTED_MODEL", "true")
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://deskmate_app:deskmate_app@localhost:5432/deskmate_test")
 os.environ.setdefault("MIGRATION_DATABASE_URL", "postgresql+asyncpg://deskmate:deskmate@localhost:5432/deskmate_test")
 
+import uuid
+
 import asyncpg
+import httpx2
 import pytest
+from argon2 import PasswordHasher
 from alembic import command
 from alembic.config import Config
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -75,33 +82,6 @@ async def app_conn():
     await conn.close()
 
 
-@pytest.fixture
-async def admin_credentials():
-    import uuid
-
-    from argon2 import PasswordHasher
-
-    hasher = PasswordHasher()
-    email = f"admin-{uuid.uuid4().hex[:8]}@example.com"
-    password = "secret1234"
-    org_id = uuid.uuid4()
-    user_id = uuid.uuid4()
-    owner_url = os.environ["MIGRATION_DATABASE_URL"].replace("+asyncpg", "")
-    conn = await asyncpg.connect(owner_url)
-    await conn.execute(
-        "INSERT INTO organizations (id, name) VALUES ($1, $2)", org_id, f"Org {org_id}"
-    )
-    await conn.execute(
-        "INSERT INTO users (id, organization_id, email, password_hash, role) VALUES ($1,$2,$3,$4,'admin')",
-        user_id,
-        org_id,
-        email,
-        hasher.hash(password),
-    )
-    await conn.close()
-    return email, password
-
-
 @pytest.fixture(autouse=True)
 async def _fresh_pool():
     """Each test has its own event loop, so pooled connections from an earlier test cannot be reused."""
@@ -109,3 +89,64 @@ async def _fresh_pool():
     from app.db.session import engine
 
     await engine.dispose()
+
+
+PASSWORD = "secret1234"
+PROVIDER = {
+    "name": "Acme",
+    "api_type": "openai",
+    # A public literal, so saving needs no DNS.
+    "base_url": "https://8.8.8.8/v1",
+    "api_key": "sk-secret-key",
+    "models": [{"model_id": "model-a"}],
+}
+
+
+async def make_user(org_id: uuid.UUID, role: str) -> str:
+    email = f"{role}-{uuid.uuid4().hex[:8]}@example.com"
+    conn = await asyncpg.connect(os.environ["MIGRATION_DATABASE_URL"].replace("+asyncpg", ""))
+    await conn.execute(
+        "INSERT INTO organizations (id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING", org_id, f"Org {org_id}"
+    )
+    await conn.execute(
+        "INSERT INTO users (id, organization_id, email, password_hash, role) VALUES ($1,$2,$3,$4,$5)",
+        uuid.uuid4(),
+        org_id,
+        email,
+        PasswordHasher().hash(PASSWORD),
+        role,
+    )
+    await conn.close()
+    return email
+
+
+async def make_client(email: str) -> httpx2.AsyncClient:
+    from app.main import app
+
+    client = httpx2.AsyncClient(transport=httpx2.ASGITransport(app=app), base_url="http://test")
+    response = await client.post("/auth/sign-in", json={"email": email, "password": PASSWORD})
+    assert response.status_code == 200, response.text
+    return client
+
+
+@pytest.fixture
+async def people():
+    """A Member and an Admin in one Organization, and a Member of another. Each Organization has a Provider.
+
+    `client.model_id` is the ID of that Organization's Model "model-a", the one a browser would send.
+    """
+    org, other = uuid.uuid4(), uuid.uuid4()
+    clients = {
+        "member": await make_client(await make_user(org, "member")),
+        "admin": await make_client(await make_user(org, "admin")),
+        "outsider": await make_client(await make_user(other, "member")),
+        "outsider_admin": await make_client(await make_user(other, "admin")),
+    }
+    for admin, members in (("admin", ["member"]), ("outsider_admin", ["outsider"])):
+        response = await clients[admin].post("/providers", json=PROVIDER)
+        assert response.status_code == 201, response.text
+        for who in (admin, *members):
+            clients[who].model_id = response.json()["models"][0]["id"]
+    yield clients
+    for client in clients.values():
+        await client.aclose()

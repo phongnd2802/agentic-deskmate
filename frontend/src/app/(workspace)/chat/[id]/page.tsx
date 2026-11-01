@@ -20,6 +20,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
       </p>
       {conversation.answers.map((answer) => (
         <section key={answer.id} aria-label={t("answer")}>
+          <p className="mb-1 font-mono text-xs text-muted-foreground">{[answer.provider_name, answer.model_id].filter(Boolean).join(" · ")}</p>
           {answer.parts.map((part, index) => part.type === "text" && <AnswerText key={index} text={part.text} />)}
           {answer.status === "stopped" && (
             <p className="flex items-center gap-2 text-sm text-warning">

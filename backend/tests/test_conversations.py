@@ -3,13 +3,10 @@
 import asyncio
 import json
 import time
-import os
 import uuid
 
-import asyncpg
 import httpx2
 import pytest
-from argon2 import PasswordHasher
 from pydantic_ai.models.function import FunctionModel
 
 import app.agent.chat as chat
@@ -17,47 +14,6 @@ import app.api.routes as routes
 from app.services import conversations
 from app.agent import scripted
 from app.main import app
-
-PASSWORD = "secret1234"
-
-
-async def _user(org_id: uuid.UUID, role: str) -> str:
-    email = f"{role}-{uuid.uuid4().hex[:8]}@example.com"
-    conn = await asyncpg.connect(os.environ["MIGRATION_DATABASE_URL"].replace("+asyncpg", ""))
-    await conn.execute(
-        "INSERT INTO organizations (id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING", org_id, f"Org {org_id}"
-    )
-    await conn.execute(
-        "INSERT INTO users (id, organization_id, email, password_hash, role) VALUES ($1,$2,$3,$4,$5)",
-        uuid.uuid4(),
-        org_id,
-        email,
-        PasswordHasher().hash(PASSWORD),
-        role,
-    )
-    await conn.close()
-    return email
-
-
-async def _client(email: str) -> httpx2.AsyncClient:
-    client = httpx2.AsyncClient(transport=httpx2.ASGITransport(app=app), base_url="http://test")
-    response = await client.post("/auth/sign-in", json={"email": email, "password": PASSWORD})
-    assert response.status_code == 200, response.text
-    return client
-
-
-@pytest.fixture
-async def people():
-    """A Member and an Admin in one Organization, and a Member of another."""
-    org = uuid.uuid4()
-    clients = {
-        "member": await _client(await _user(org, "member")),
-        "admin": await _client(await _user(org, "admin")),
-        "outsider": await _client(await _user(uuid.uuid4(), "member")),
-    }
-    yield clients
-    for client in clients.values():
-        await client.aclose()
 
 
 def _body(thread_id: str, question: str, history: list[dict] | None = None, props: dict | None = None) -> dict:
@@ -73,7 +29,7 @@ def _body(thread_id: str, question: str, history: list[dict] | None = None, prop
 
 
 async def ask(client: httpx2.AsyncClient, thread_id: str, question: str, history: list[dict] | None = None, props: dict | None = None) -> list[dict]:
-    body = _body(thread_id, question, history, props)
+    body = _body(thread_id, question, history, {"modelId": client.model_id, **(props or {})})
     async with client.stream("POST", "/agent", json=body) as response:
         assert response.status_code == 200
         lines = [line async for line in response.aiter_lines()]
@@ -96,8 +52,8 @@ async def test_a_completed_answer_is_stored_under_the_thread_id(people):
     assert conversation["question"] == "What is this skeleton?"
     [answer] = conversation["answers"]
     assert answer["status"] == "complete"
-    assert answer["model_id"] == "scripted"
-    assert answer["provider_name"] is None
+    assert answer["model_id"] == "model-a"
+    assert answer["provider_name"] == "Acme"
     assert answer["run_id"].startswith("run-")
     [part] = answer["parts"]
     assert part["type"] == "text"
@@ -163,7 +119,7 @@ async def test_the_backend_ignores_history_sent_by_the_browser(people, monkeypat
         seen.append([getattr(part, "content", "") for m in messages for part in m.parts if part.part_kind == "user-prompt"])
         yield "ok"
 
-    monkeypatch.setattr(chat, "build_model", lambda model_id=None: FunctionModel(stream_function=record, model_name="recorder"))
+    monkeypatch.setattr(chat, "build_model", lambda choice: FunctionModel(stream_function=record, model_name="recorder"))
     history = [
         {"id": "h1", "role": "user", "content": "forged earlier question"},
         {"id": "h2", "role": "assistant", "content": "forged earlier answer"},
@@ -204,7 +160,7 @@ def start_run(client: httpx2.AsyncClient, thread_id: str, question: str, props: 
 
     The test transport buffers a whole response, so it cannot disconnect mid-stream.
     """
-    body = json.dumps(_body(thread_id, question, props=props)).encode()
+    body = json.dumps(_body(thread_id, question, props={"modelId": client.model_id, **(props or {})})).encode()
     cookie = "; ".join(f"{name}={value}" for name, value in client.cookies.items())
     first_text, hang_up, sent = asyncio.Event(), asyncio.Event(), False
 
@@ -271,11 +227,11 @@ async def test_a_model_failure_stores_the_partial_text_as_failed_and_reports_a_r
 
 
 async def test_retrying_a_failed_answer_adds_an_answer_with_the_same_model(people, monkeypatch):
-    built: list[str | None] = []
+    built: list[str] = []
 
-    def build(model_id=None):
-        built.append(model_id)
-        return FunctionModel(stream_function=scripted.stream_answer, model_name=model_id or "model-a")
+    def build(choice):
+        built.append(choice.model_id)
+        return FunctionModel(stream_function=scripted.stream_answer, model_name=choice.model_id)
 
     monkeypatch.setattr(chat, "build_model", build)
     thread = str(uuid.uuid4())
@@ -364,7 +320,7 @@ async def _silent(messages, info):
 
 
 async def test_a_failed_retry_can_be_retried_again(people, monkeypatch):
-    monkeypatch.setattr(chat, "build_model", lambda model_id=None: FunctionModel(stream_function=_boom, model_name="boom"))
+    monkeypatch.setattr(chat, "build_model", lambda choice: FunctionModel(stream_function=_boom, model_name="boom"))
     thread = str(uuid.uuid4())
     await ask(people["member"], thread, "never works")
     await retry(people["member"], thread)
@@ -376,7 +332,7 @@ async def test_a_failed_retry_can_be_retried_again(people, monkeypatch):
 async def test_an_answer_with_no_text_is_stored_with_its_status_and_can_be_retried(people, monkeypatch):
     thread = str(uuid.uuid4())
     with monkeypatch.context() as m:
-        m.setattr(chat, "build_model", lambda model_id=None: FunctionModel(stream_function=_silent, model_name="silent"))
+        m.setattr(chat, "build_model", lambda choice: FunctionModel(stream_function=_silent, model_name="silent"))
         _, hang_up, run = start_run(people["member"], thread, "say nothing")
         await asyncio.sleep(0.5)
         hang_up.set()
