@@ -10,6 +10,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
+/** Shared with the Conversation list, which sits in the same sidebar family. */
+export const navLinkClass = (current: boolean) =>
+  cn(
+    "flex h-8 items-center gap-2 rounded-md px-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sidebar-ring pointer-coarse:min-h-11 [&_svg]:size-4",
+    current && "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
+  );
+
 type NavItem = { href: string; label: string; icon: React.ReactNode };
 
 export function Sidebar({
@@ -45,10 +52,7 @@ export function Sidebar({
                 <Link
                   href={item.href}
                   aria-current={current ? "page" : undefined}
-                  className={cn(
-                    "flex h-8 items-center gap-2 rounded-md px-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sidebar-ring pointer-coarse:min-h-11 [&_svg]:size-4",
-                    current && "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
-                  )}
+                  className={navLinkClass(current)}
                 >
                   {item.icon}
                   {item.label}

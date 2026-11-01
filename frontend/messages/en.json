@@ -85,6 +85,18 @@
     "closePreview": "Close preview",
     "close": "Close",
     "openThreads": "Open threads",
-    "sidebar": "Copilot chat sidebar"
+    "sidebar": "Copilot chat sidebar",
+    "conversations": "Conversations",
+    "newConversation": "New conversation",
+    "noConversations": "No conversations yet.",
+    "locked": "This Conversation has its Answer. Start a new Conversation to ask something else.",
+    "answer": "Answer",
+    "question": "Question",
+    "error": {
+      "second_question": "This Conversation already has a question. Start a new Conversation to ask something else.",
+      "no_question": "Type a question to start a Conversation.",
+      "invalid_conversation": "This Conversation could not be started. Start a new Conversation.",
+      "generic": "The question could not be sent. Try again."
+    }
   }
 }
