@@ -1,3 +1,4 @@
+import { Bot, BookOpen, LayoutDashboard, MessageSquare } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Sidebar } from "@/components/sidebar";
@@ -5,10 +6,10 @@ import { Sidebar } from "@/components/sidebar";
 export default async function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const t = await getTranslations("workspace");
   const items = [
-    { href: "/dashboard", label: t("nav.dashboard") },
-    { href: "/chat", label: t("nav.chat") },
-    { href: "/agents", label: t("nav.agents") },
-    { href: "/knowledge-bases", label: t("nav.knowledgeBases") },
+    { href: "/dashboard", label: t("nav.dashboard"), icon: <LayoutDashboard aria-hidden /> },
+    { href: "/chat", label: t("nav.chat"), icon: <MessageSquare aria-hidden /> },
+    { href: "/agents", label: t("nav.agents"), icon: <Bot aria-hidden /> },
+    { href: "/knowledge-bases", label: t("nav.knowledgeBases"), icon: <BookOpen aria-hidden /> },
   ];
 
   return (

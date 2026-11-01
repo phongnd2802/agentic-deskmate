@@ -11,3 +11,7 @@ Default vocabulary: needs-triage, needs-info, ready-for-agent, ready-for-human, 
 ### Domain docs
 
 Single-context: one GLOSSARY.md and docs/adr/ at the repo root. See `docs/agents/domain.md`.
+
+## Design system
+
+Before building or restyling UI in `frontend/`, or adding a shadcn component, read `design-system/agentic-deskmate/MASTER.md`. The work is done when its pre-delivery checklist passes.
