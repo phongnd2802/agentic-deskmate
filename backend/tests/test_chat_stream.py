@@ -8,7 +8,7 @@ from app.main import app
 
 
 RUN_INPUT = {
-    "threadId": "thread-1",
+    "threadId": "6f1c2b0e-3d7a-4b8e-9a51-0c7d2f4e8a11",
     "runId": "run-1",
     "messages": [{"id": "m1", "role": "user", "content": "What is this skeleton?"}],
     "tools": [],

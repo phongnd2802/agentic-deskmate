@@ -100,3 +100,12 @@ async def admin_credentials():
     )
     await conn.close()
     return email, password
+
+
+@pytest.fixture(autouse=True)
+async def _fresh_pool():
+    """Each test has its own event loop, so pooled connections from an earlier test cannot be reused."""
+    yield
+    from app.db.session import engine
+
+    await engine.dispose()

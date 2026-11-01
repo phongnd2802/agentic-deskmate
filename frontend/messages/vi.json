@@ -85,6 +85,18 @@
     "closePreview": "Đóng bản xem trước",
     "close": "Đóng",
     "openThreads": "Mở danh sách hội thoại",
-    "sidebar": "Thanh bên trò chuyện Copilot"
+    "sidebar": "Thanh bên trò chuyện Copilot",
+    "conversations": "Cuộc trò chuyện",
+    "newConversation": "Cuộc trò chuyện mới",
+    "noConversations": "Chưa có cuộc trò chuyện nào.",
+    "locked": "Cuộc trò chuyện này đã có câu trả lời. Hãy bắt đầu cuộc trò chuyện mới để hỏi điều khác.",
+    "answer": "Câu trả lời",
+    "question": "Câu hỏi",
+    "error": {
+      "second_question": "Cuộc trò chuyện này đã có câu hỏi. Hãy bắt đầu cuộc trò chuyện mới để hỏi điều khác.",
+      "no_question": "Hãy nhập câu hỏi để bắt đầu cuộc trò chuyện.",
+      "invalid_conversation": "Không thể bắt đầu cuộc trò chuyện này. Hãy bắt đầu cuộc trò chuyện mới.",
+      "generic": "Không thể gửi câu hỏi. Hãy thử lại."
+    }
   }
 }
