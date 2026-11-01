@@ -1,8 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+import { readCredentials, signIn } from "./auth";
+
 const FINAL_LINE = "The walking skeleton is working.";
 
 test("a question streams a Markdown Answer with formatted code", async ({ page }) => {
+  const { emailA, passwordA } = readCredentials();
+  await signIn(page, emailA, passwordA);
   const ready = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/copilotkit/info");
   await page.goto("/chat");
   await ready;

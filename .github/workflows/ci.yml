@@ -6,6 +6,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: deskmate
+          POSTGRES_PASSWORD: deskmate
+          POSTGRES_DB: deskmate
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U deskmate -d deskmate"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -19,6 +33,9 @@ jobs:
 
       - name: Backend tests (Seam 1)
         working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://deskmate_app:deskmate_app@localhost:5432/deskmate_test
+          MIGRATION_DATABASE_URL: postgresql+asyncpg://deskmate:deskmate@localhost:5432/deskmate_test
         run: |
           uv sync --frozen
           uv run pytest

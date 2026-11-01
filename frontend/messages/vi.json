@@ -27,6 +27,21 @@
       "description": "Kiến thức mà các Agent có thể dùng sẽ nằm ở đây."
     }
   },
+  "signIn": {
+    "title": "Đăng nhập",
+    "description": "Dùng email và mật khẩu mà Tổ chức của bạn cấp.",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "submit": "Đăng nhập",
+    "submitting": "Đang đăng nhập…",
+    "invalid": "Email hoặc mật khẩu không đúng.",
+    "error": "Không thể đăng nhập. Thử lại.",
+    "noRegistration": "Tài khoản do Tổ chức của bạn tạo. Hỏi Quản trị viên để được mời."
+  },
+  "userMenu": {
+    "menuLabel": "Menu người dùng",
+    "signOut": "Đăng xuất"
+  },
   "chat": {
     "inputPlaceholder": "Nhập câu hỏi...",
     "sendButton": "Gửi",
