@@ -5,7 +5,11 @@ Revises:
 Create Date: 2026-11-01
 """
 
+import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.engine import make_url
+
+from app.settings import settings
 
 revision = "667c32fc3736"
 down_revision = None
@@ -14,12 +18,18 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Create the non-superuser runtime role if it does not exist yet.
+    # Create the non-superuser runtime role if it does not exist yet, with the
+    # password from DATABASE_URL (passed through a transaction-local setting so it
+    # is never spliced into SQL).
+    password = make_url(settings.database_url).password
+    if not password:
+        raise RuntimeError("DATABASE_URL must carry the deskmate_app password")
+    op.get_bind().execute(sa.text("SELECT set_config('deskmate.app_password', :pw, true)"), {"pw": password})
     op.execute(
         """
         DO $$ BEGIN
             IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'deskmate_app') THEN
-                CREATE ROLE deskmate_app LOGIN PASSWORD 'deskmate_app';
+                EXECUTE format('CREATE ROLE deskmate_app LOGIN PASSWORD %L', current_setting('deskmate.app_password'));
             END IF;
             EXECUTE format('GRANT CONNECT ON DATABASE %I TO deskmate_app', current_database());
         END $$;
@@ -68,8 +78,9 @@ def upgrade() -> None:
         "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO deskmate_app"
     )
 
-    # Row-Level Security. FORCE makes the owner subject to RLS too, so a missing
-    # application filter cannot leak rows even if the owner role is used.
+    # Row-Level Security. FORCE subjects the table owner to RLS, but a superuser
+    # always bypasses it. The owner role `deskmate` is POSTGRES_USER, a superuser,
+    # so isolation holds only for the runtime role `deskmate_app`.
     for table in ("organizations", "users", "sessions"):
         op.execute(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY")
         op.execute(f"ALTER TABLE {table} FORCE ROW LEVEL SECURITY")

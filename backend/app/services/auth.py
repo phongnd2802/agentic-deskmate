@@ -10,6 +10,8 @@ import hashlib
 import secrets
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from typing import Literal
+from uuid import UUID
 
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
@@ -30,11 +32,11 @@ class InvalidCredentials(Exception):
 
 @dataclass(frozen=True)
 class CurrentUser:
-    id: str
+    id: UUID
     email: str
-    role: str
+    role: Literal["admin", "member"]
     locale: str
-    organization_id: str
+    organization_id: UUID
     organization_name: str
 
 
@@ -63,6 +65,20 @@ async def _lookup_session(db: AsyncSession, token_hash: str) -> dict | None:
     return dict(row) if row else None
 
 
+async def _scoped_user(db: AsyncSession, row: dict) -> CurrentUser:
+    """Scope the transaction to the row's Organization and build the User."""
+    await set_organization(db, row["organization_id"])
+    name = await db.scalar(select(Organization.name).where(Organization.id == row["organization_id"]))
+    return CurrentUser(
+        id=row["user_id"],
+        email=row["email"],
+        role=row["role"],
+        locale=row["locale"],
+        organization_id=row["organization_id"],
+        organization_name=name,
+    )
+
+
 async def sign_in(email: str, password: str) -> tuple[str, CurrentUser]:
     normalized = email.strip().lower()
     async with session_factory() as db:
@@ -71,7 +87,7 @@ async def sign_in(email: str, password: str) -> tuple[str, CurrentUser]:
             if user is None or not _verify_password(password, user["password_hash"]):
                 raise InvalidCredentials
 
-            await set_organization(db, user["organization_id"])
+            current = await _scoped_user(db, user)
             token = secrets.token_urlsafe(32)
             db.add(
                 Session(
@@ -81,16 +97,8 @@ async def sign_in(email: str, password: str) -> tuple[str, CurrentUser]:
                     expires_at=datetime.now(UTC) + timedelta(days=settings.session_ttl_days),
                 )
             )
-            name = await db.scalar(select(Organization.name).where(Organization.id == user["organization_id"]))
 
-    return token, CurrentUser(
-        id=str(user["user_id"]),
-        email=user["email"],
-        role=user["role"],
-        locale=user["locale"],
-        organization_id=str(user["organization_id"]),
-        organization_name=name,
-    )
+    return token, current
 
 
 async def sign_out(token: str) -> None:
@@ -113,14 +121,4 @@ async def current_user(request: Request) -> CurrentUser:
             found = await _lookup_session(db, hash_token(token))
             if found is None:
                 raise HTTPException(status_code=401, detail="Not signed in")
-            await set_organization(db, found["organization_id"])
-            name = await db.scalar(select(Organization.name).where(Organization.id == found["organization_id"]))
-
-    return CurrentUser(
-        id=str(found["user_id"]),
-        email=found["email"],
-        role=found["role"],
-        locale=found["locale"],
-        organization_id=str(found["organization_id"]),
-        organization_name=name,
-    )
+            return await _scoped_user(db, found)

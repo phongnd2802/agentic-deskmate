@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     # Owner connection for migrations and the Operator CLI; it bypasses RLS.
     migration_database_url: str | None = None
     session_ttl_days: int = 30
+    # Secure cookie: on everywhere except local development over plain HTTP.
+    session_cookie_secure: bool = True
 
     @property
     def owner_database_url(self) -> str:

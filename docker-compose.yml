@@ -21,6 +21,7 @@ services:
     build: ./backend
     command: sh -c "uv run --frozen alembic upgrade head && uv run --frozen uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     environment:
+      SESSION_COOKIE_SECURE: "false" # local development is plain HTTP
       DATABASE_URL: postgresql+asyncpg://deskmate_app:deskmate_app@db:5432/deskmate
       MIGRATION_DATABASE_URL: postgresql+asyncpg://deskmate:deskmate@db:5432/deskmate
     volumes:

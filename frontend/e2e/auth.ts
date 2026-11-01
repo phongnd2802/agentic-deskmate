@@ -1,13 +1,13 @@
 import { readFileSync } from "node:fs";
 import { Page } from "@playwright/test";
 
-type Creds = { emailA: string; passwordA: string; emailB: string; passwordB: string };
+export type Credentials = { email: string; password: string };
 
-export function readCredentials(): Creds {
-  return JSON.parse(readFileSync("test-results/e2e-credentials.json", "utf8")) as Creds;
+export function readCredentials(): { a: Credentials; b: Credentials } {
+  return JSON.parse(readFileSync("test-results/e2e-credentials.json", "utf8"));
 }
 
-export async function signIn(page: Page, email: string, password: string) {
+export async function signIn(page: Page, { email, password }: Credentials) {
   await page.goto("/sign-in");
   await page.locator('input[type="email"]').fill(email);
   await page.locator('input[type="password"]').fill(password);

@@ -3,6 +3,8 @@
 import asyncio
 import os
 
+# The test client talks plain HTTP, which would drop a Secure cookie.
+os.environ.setdefault("SESSION_COOKIE_SECURE", "false")
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://deskmate_app:deskmate_app@localhost:5432/deskmate_test")
 os.environ.setdefault("MIGRATION_DATABASE_URL", "postgresql+asyncpg://deskmate:deskmate@localhost:5432/deskmate_test")
 
@@ -17,17 +19,11 @@ TEST_DB = "deskmate_test"
 
 
 def _owner_url() -> str:
-    return os.environ.get(
-        "MIGRATION_DATABASE_URL",
-        "postgresql+asyncpg://deskmate:deskmate@localhost:5432/deskmate",
-    )
+    return os.environ["MIGRATION_DATABASE_URL"]
 
 
 def _app_url() -> str:
-    return os.environ.get(
-        "DATABASE_URL",
-        "postgresql+asyncpg://deskmate_app:deskmate_app@localhost:5432/deskmate",
-    )
+    return os.environ["DATABASE_URL"]
 
 
 async def _reset_test_db() -> None:
@@ -53,13 +49,6 @@ async def _reset_test_db() -> None:
         command.upgrade(cfg, "head")
 
     await asyncio.to_thread(_upgrade)
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.fixture(scope="session", autouse=True)

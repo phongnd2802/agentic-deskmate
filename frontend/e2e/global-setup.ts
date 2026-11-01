@@ -1,26 +1,28 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { chromium, type FullConfig } from "@playwright/test";
 
-export default function globalSetup() {
+import { signIn } from "./auth";
+
+export default async function globalSetup(config: FullConfig) {
   const root = resolve(process.cwd(), "..");
-  const creds: { emailA: string; passwordA: string; emailB: string; passwordB: string } = {
-    emailA: `e2e-a-${Date.now()}@example.com`,
-    passwordA: "secret1234",
-    emailB: `e2e-b-${Date.now()}@example.com`,
-    passwordB: "secret1234",
+  const stamp = Date.now();
+  const creds = {
+    a: { email: `e2e-a-${stamp}@example.com`, password: "secret1234" },
+    b: { email: `e2e-b-${stamp}@example.com`, password: "secret1234" },
   };
 
-  for (const [email, org] of [
-    [creds.emailA, `E2E Org A ${Date.now()}`],
-    [creds.emailB, `E2E Org B ${Date.now()}`],
-  ]) {
+  for (const [key, user] of Object.entries(creds)) {
+    // The password travels in the environment, never on a command line where `ps` shows it.
     execFileSync(
       "docker",
       [
         "compose",
         "exec",
         "-T",
+        "-e",
+        "DESKMATE_ADMIN_PASSWORD",
         "backend",
         "uv",
         "run",
@@ -29,19 +31,21 @@ export default function globalSetup() {
         "app.cli",
         "create-organization",
         "--name",
-        org,
+        `E2E Org ${key.toUpperCase()} ${stamp}`,
         "--admin-email",
-        email,
-        "--password",
-        (email === creds.emailA ? creds.passwordA : creds.passwordB),
+        user.email,
       ],
-      { cwd: root, stdio: "inherit" },
+      { cwd: root, stdio: "inherit", env: { ...process.env, DESKMATE_ADMIN_PASSWORD: user.password } },
     );
   }
 
   mkdirSync(resolve(process.cwd(), "test-results"), { recursive: true });
-  writeFileSync(
-    resolve(process.cwd(), "test-results", "e2e-credentials.json"),
-    JSON.stringify(creds),
-  );
+  writeFileSync(resolve(process.cwd(), "test-results", "e2e-credentials.json"), JSON.stringify(creds));
+
+  // Next dev compiles /chat on first visit, which can outlast a test's timeout after a fresh image.
+  const browser = await chromium.launch();
+  const page = await browser.newPage({ baseURL: config.projects[0].use.baseURL });
+  page.setDefaultTimeout(300_000);
+  await signIn(page, creds.a);
+  await browser.close();
 }

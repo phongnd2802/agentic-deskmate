@@ -1,10 +1,12 @@
 "use client";
 
+import { CircleAlert } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -40,43 +42,54 @@ export function SignInForm() {
     }
   }
 
+  const errorProps = { "aria-invalid": error !== null, "aria-describedby": error ? "sign-in-error" : undefined };
+
   return (
     <main className="flex min-h-dvh items-center justify-center p-4">
-      <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 rounded-lg border border-border bg-card p-6">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold">{t("title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("description")}</p>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">{t("email")}</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-            className="pointer-coarse:text-[16px]"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">{t("password")}</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            className="pointer-coarse:text-[16px]"
-          />
-        </div>
-        {error ? <p className="text-sm text-destructive" role="alert">{error}</p> : null}
-        <Button type="submit" className="w-full" disabled={submitting}>
-          {submitting ? t("submitting") : t("submit")}
-        </Button>
-        <p className="text-xs text-muted-foreground">{t("noRegistration")}</p>
-      </form>
+      <Card size="sm" className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle role="heading" aria-level={1} className="text-lg">{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={onSubmit} className="flex flex-col gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="email">{t("email")}</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                {...errorProps}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">{t("password")}</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                {...errorProps}
+              />
+            </div>
+            {error ? (
+              <p id="sign-in-error" className="flex items-center gap-1 text-xs text-destructive" role="alert">
+                <CircleAlert aria-hidden className="size-4 shrink-0" />
+                {error}
+              </p>
+            ) : null}
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? t("submitting") : t("submit")}
+            </Button>
+            <p className="text-xs text-muted-foreground">{t("noRegistration")}</p>
+          </form>
+        </CardContent>
+      </Card>
     </main>
   );
 }

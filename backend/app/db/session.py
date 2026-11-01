@@ -1,12 +1,10 @@
-"""Engines and the tenant-scoped transaction every request uses.
+"""Engines, and the Organization scoping every request applies.
 
 The runtime role is not a superuser and the tables force Row-Level Security, so a
 transaction sees only the Organization named in `app.organization_id`. The owner
-engine is for migrations and the Operator CLI, which act outside any tenant.
+engine is for migrations and the Operator CLI, which act outside any Organization.
 """
 
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
 import uuid
 
 from sqlalchemy import text
@@ -25,9 +23,3 @@ async def set_organization(db: AsyncSession, organization_id: uuid.UUID) -> None
     """Scope the current transaction to one Organization. Transaction-local."""
     await db.execute(text("SELECT set_config('app.organization_id', :id, true)"), {"id": str(organization_id)})
 
-
-@asynccontextmanager
-async def tenant_session(organization_id: uuid.UUID) -> AsyncIterator[AsyncSession]:
-    async with session_factory() as db, db.begin():
-        await set_organization(db, organization_id)
-        yield db

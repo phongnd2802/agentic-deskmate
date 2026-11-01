@@ -36,7 +36,7 @@
     "submitting": "Signing in…",
     "invalid": "Email or password is incorrect.",
     "error": "Could not sign in. Try again.",
-    "noRegistration": "Accounts are created by your Organization. Ask your Admin for an Invitation."
+    "noRegistration": "Your Admin adds Users to your Organization. Ask them for an Invitation."
   },
   "userMenu": {
     "menuLabel": "User menu",

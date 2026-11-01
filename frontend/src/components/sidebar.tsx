@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 type NavItem = { href: string; label: string; icon: React.ReactNode };
@@ -60,14 +61,14 @@ export function Sidebar({
       <div className="mt-auto pt-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               aria-label={t("menuLabel")}
-              className="flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-sidebar-ring pointer-coarse:min-h-11"
+              className="w-full justify-start px-2 font-normal hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
-              <UserIcon aria-hidden className="size-4" />
+              <UserIcon aria-hidden />
               <span className="truncate">{user.email}</span>
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuLabel className="truncate text-xs text-muted-foreground">{user.email}</DropdownMenuLabel>

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 from app.schemas.auth import CurrentUserOut, OrganizationOut, SignInRequest
 from app.services.auth import CurrentUser, InvalidCredentials, current_user, sign_in, sign_out
-from app.settings import SESSION_COOKIE
+from app.settings import SESSION_COOKIE, settings
 
 router = APIRouter()
 
@@ -28,8 +28,9 @@ async def sign_in_route(body: SignInRequest, response: Response) -> CurrentUserO
     response.set_cookie(
         SESSION_COOKIE,
         token,
-        max_age=60 * 60 * 24 * 30,
+        max_age=settings.session_ttl_days * 24 * 60 * 60,
         httponly=True,
+        secure=settings.session_cookie_secure,
         samesite="lax",
         path="/",
     )
