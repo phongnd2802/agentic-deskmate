@@ -1,0 +1,58 @@
+name: agentic-deskmate
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: deskmate
+      POSTGRES_PASSWORD: deskmate
+      POSTGRES_DB: deskmate
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U deskmate -d deskmate"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    command: uv run --frozen uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql://deskmate:deskmate@db:5432/deskmate
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # No ports: FastAPI is only reachable inside the Compose network (ADR-0003).
+
+  frontend:
+    build: ./frontend
+    command: bun run dev
+    environment:
+      BACKEND_URL: http://backend:8000
+      COPILOTKIT_TELEMETRY_DISABLED: "true"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+volumes:
+  pgdata:

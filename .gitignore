@@ -13,10 +13,16 @@ node_modules/
 __pycache__/
 *.pyc
 .cache/
+.pytest_cache/
+*.tsbuildinfo
 dist/
 build/
+.next/
+test-results/
+playwright-report/
 
 # editors and OS
 .vscode/
 .idea/
 .DS_Store
+.claude/

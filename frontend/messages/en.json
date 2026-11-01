@@ -1,0 +1,75 @@
+{
+  "workspace": {
+    "name": "Agentic DeskMate",
+    "navLabel": "Workspace",
+    "nav": {
+      "dashboard": "Dashboard",
+      "chat": "Chat",
+      "agents": "Agents",
+      "knowledgeBases": "Knowledge Bases"
+    }
+  },
+  "placeholder": {
+    "comingSoon": "This area is coming soon.",
+    "backToChat": "Back to Chat"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "An overview of your workspace will live here."
+    },
+    "agents": {
+      "title": "Agents",
+      "description": "Agents you can work with in Chat will be created and managed here."
+    },
+    "knowledgeBases": {
+      "title": "Knowledge Bases",
+      "description": "The knowledge your Agents can use will live here."
+    }
+  },
+  "chat": {
+    "inputPlaceholder": "Ask a question...",
+    "sendButton": "Send",
+    "stopButton": "Stop",
+    "disclaimer": "AI can make mistakes. Check important information.",
+    "startTranscribeButton": "Transcribe",
+    "cancelTranscribeButton": "Cancel",
+    "finishTranscribeButton": "Finish",
+    "addButton": "Add attachments",
+    "toolsButton": "Tools",
+    "copyCode": "Copy",
+    "copiedCode": "Copied",
+    "copyMessage": "Copy",
+    "copyUserMessage": "Copy",
+    "editMessage": "Edit",
+    "previousBranch": "Previous branch",
+    "nextBranch": "Next branch",
+    "thumbsUp": "Good response",
+    "thumbsDown": "Bad response",
+    "feedbackCommentPlaceholder": "Add a comment (optional)",
+    "feedbackCommentSubmit": "Send comment",
+    "readAloud": "Read aloud",
+    "regenerate": "Regenerate",
+    "inspector": "View in Inspector",
+    "inspectorDescription": "Open this message in the Inspector",
+    "inspectorLocalOnly": "Local only",
+    "inspectorLocalOnlyDescription": "Only visible on localhost or loopback hosts in development. Never shown in production.",
+    "inspectorTitle": "CopilotKit Inspector",
+    "inspectorHide": "Hide this icon",
+    "inspectorHideDescription": "Until you reload this page",
+    "toggleOpen": "Open chat",
+    "toggleClose": "Close chat",
+    "scrollToBottom": "Scroll to bottom",
+    "modalTitle": "CopilotKit Chat",
+    "welcome": "How can I help you today?",
+    "thinking": "Thinking…",
+    "slashMenu": "Slash commands",
+    "slashMenuEmpty": "No commands found",
+    "removeAttachment": "Remove attachment",
+    "playVideo": "Play video",
+    "closePreview": "Close preview",
+    "close": "Close",
+    "openThreads": "Open threads",
+    "sidebar": "Copilot chat sidebar"
+  }
+}

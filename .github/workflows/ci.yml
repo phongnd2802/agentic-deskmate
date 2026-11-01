@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.2"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Backend tests (Seam 1)
+        working-directory: backend
+        run: |
+          uv sync --frozen
+          uv run pytest
+
+      - name: Frontend dependencies
+        working-directory: frontend
+        run: bun install --frozen-lockfile
+
+      - name: API types are not stale
+        run: make api-types-check
+
+      - name: Typecheck
+        working-directory: frontend
+        run: bun run typecheck
+
+      - name: Start the stack
+        run: docker compose up -d --build --wait
+
+      - name: Install Chromium
+        working-directory: frontend
+        run: bunx playwright install --with-deps chromium
+
+      - name: Browser tests (Seam 2)
+        working-directory: frontend
+        run: bunx playwright test
+
+      - name: Stop the stack
+        if: always()
+        run: docker compose down -v
