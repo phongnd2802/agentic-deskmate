@@ -74,7 +74,12 @@ async def test_a_model_calling_a_tool_it_was_not_offered_fails_the_answer_and_no
     assert not [e for e in events if e["type"].startswith("TOOL_CALL")]
     [answer] = await answers(people["member"], thread)
     assert answer["status"] == "failed"
-    assert [p["type"] for p in answer["parts"]] == ["text"], "the unoffered call is not stored"
+    assert answer["parts"] == [{"type": "text", "text": "Calling a tool I was not offered. "}], "text is kept, the call is not"
+
+    body = {**_body(thread, "ignored", props={"modelId": people["member"].model_id, "retry": True}), "tools": [BROWSER_TOOL]}
+    async with people["member"].stream("POST", "/agent", json=body) as response:
+        [line async for line in response.aiter_lines()]
+    assert [a["status"] for a in await answers(people["member"], thread)] == ["failed", "complete"]
 
 
 async def test_invalid_render_arguments_fail_the_answer_and_a_retry_adds_another(people, gui_model):
@@ -103,6 +108,8 @@ async def test_invalid_render_arguments_fail_the_answer_and_a_retry_adds_another
         '{"html":"<b>x</b>","initialHeight":"120"}',
         '{"html":"<b>x</b>","jsExpressions":"alert(1)"}',
         '{"html":"<b>trunc',
+        '{"html":"<b>x</b>","initialHeight":NaN}',
+        '{"html":"<b>x</b>","initialHeight":Infinity}',
         "[]",
     ],
 )
@@ -117,10 +124,13 @@ async def test_arguments_that_would_not_render_on_reopen_fail_the_answer_live(pe
 
 
 async def test_a_tool_that_is_not_the_render_tool_fails_the_answer_even_with_the_flag_on(people, gui_model):
-    events = await ask_with_tool(people["member"], gui_model, str(uuid.uuid4()), '[gui-raw other_tool {"html":"<b>x</b>"}]')
+    thread = str(uuid.uuid4())
+    events = await ask_with_tool(people["member"], gui_model, thread, '[gui-raw other_tool {"html":"<b>x</b>"}]')
 
     assert types(events)[-1] == "RUN_ERROR"
     assert not [e for e in events if e["type"].startswith("TOOL_CALL")]
+    [answer] = await answers(people["member"], thread)
+    assert answer["status"] == "failed" and all(p["type"] == "text" for p in answer["parts"])
 
 
 async def test_two_render_calls_in_one_run_are_each_validated_and_stored(people, gui_model):

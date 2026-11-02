@@ -8,7 +8,7 @@ import json
 from collections.abc import AsyncIterator
 
 from ag_ui.core import ActivitySnapshotEvent, ToolCallArgsEvent, ToolCallEndEvent, ToolCallStartEvent
-from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 RENDER_TOOL = "generateSandboxedUi"
 
@@ -29,11 +29,11 @@ class InvalidRender(Exception):
 class RenderArgs(BaseModel):
     """The arguments the browser registers for the tool, with html required: without it the User gets an empty box.
 
-    Strict, and an absent field is absent, never null: the page that reopens an Answer validates the same way, so what
-    passes here also renders there.
+    Strict, no NaN or Infinity (browser JSON.parse rejects them), and an absent field is absent, never null: the page
+    that reopens an Answer validates the same way, so what passes here also renders there.
     """
 
-    model_config = ConfigDict(strict=True)
+    model_config = ConfigDict(strict=True, allow_inf_nan=False)
 
     html: str
     initialHeight: float = 200
@@ -77,7 +77,7 @@ async def hold_render_calls(events: AsyncIterator, enabled: bool) -> AsyncIterat
             start, args = held.pop(event.tool_call_id)
             try:
                 RenderArgs.model_validate(json.loads(args))
-            except (ValueError, ValidationError) as error:
+            except ValueError as error:
                 raise InvalidRender(f"Invalid {RENDER_TOOL} arguments: {error}") from error
             yield start
             yield ToolCallArgsEvent(tool_call_id=event.tool_call_id, delta=args)
