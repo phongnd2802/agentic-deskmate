@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { backendUrl } from "@/lib/backend";
 
 // Only what the browser really calls. Everything else on FastAPI (docs, openapi.json, /agent) stays unreachable (ADR-0003).
-const ALLOWED = [/^POST auth\/sign-(in|out)$/, /^POST providers$/, /^(PUT|DELETE) providers\/[0-9a-f-]{36}$/,
+const ALLOWED = [/^POST auth\/sign-(in|out)$/, /^PUT auth\/locale$/, /^POST providers$/, /^(PUT|DELETE) providers\/[0-9a-f-]{36}$/,
   /^POST invitations$/,
   /^POST users\/[0-9a-f-]{36}\/password-reset$/,
   /^POST (invitations|password-resets)\/[\w-]+\/accept$/,

@@ -89,7 +89,7 @@ function ConversationChat({ threadId }: { threadId: string }) {
   const chatRef = useRef<HTMLDivElement>(null);
   const retryRef = useRef<HTMLButtonElement>(null);
   // CopilotChat does not display errors, so a refused question is shown here.
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // a message key, so a language switch re-renders it
 
   useEffect(() => {
     const subscription = agent.subscribe({
@@ -103,7 +103,7 @@ function ConversationChat({ threadId }: { threadId: string }) {
         const stopped = event.code === "abort";
         const failed = event.code === "model_failed";
         const key = `error.${event.code}`;
-        if (!stopped) setError(event.code && t.has(key) ? t(key) : t("error.generic"));
+        if (!stopped) setError(event.code && t.has(key) ? key : "error.generic");
         if (stopped || failed) {
           setEnded(stopped ? "stopped" : "failed");
           setAnswered(true);
@@ -200,7 +200,7 @@ function ConversationChat({ threadId }: { threadId: string }) {
               ) : (
                 <p role="alert" className="flex items-start gap-2 text-destructive">
                   <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
-                  {error}
+                  {error && t(error)}
                 </p>
               )}
               {ended && (

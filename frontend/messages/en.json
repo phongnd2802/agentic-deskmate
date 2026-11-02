@@ -40,6 +40,8 @@
     "noRegistration": "Your Admin adds Users to your Organization. Ask them for an Invitation."
   },
   "userMenu": {
+    "languageFailed": "The language could not be saved. Try again.",
+    "language": "Language",
     "menuLabel": "User menu",
     "signOut": "Sign out"
   },

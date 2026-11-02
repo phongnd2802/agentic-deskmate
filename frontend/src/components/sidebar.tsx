@@ -1,14 +1,16 @@
 "use client";
 
-import { LogOut, User as UserIcon } from "lucide-react";
+import { CircleAlert, LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
+import type { AppLocale } from "@/i18n/request";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 /** Shared with the Conversation list, which sits in the same sidebar family. */
 export const navLinkClass = (current: boolean) =>
@@ -36,10 +38,29 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations("userMenu");
+  const locale = useLocale();
+  const [languageFailed, setLanguageFailed] = useState(false);
 
   async function signOut() {
     await fetch("/api/backend/auth/sign-out", { method: "POST" });
+    document.cookie = "NEXT_LOCALE=; path=/; max-age=0"; // the next User on this browser starts from its language
     router.replace("/sign-in");
+    router.refresh();
+  }
+
+  async function changeLanguage(next: AppLocale) {
+    setLanguageFailed(false);
+    try {
+      const response = await fetch("/api/backend/auth/locale", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ locale: next }),
+      });
+      if (!response.ok) return setLanguageFailed(true);
+    } catch {
+      return setLanguageFailed(true);
+    }
+    document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; samesite=lax`; // for signed-out pages
     router.refresh();
   }
 
@@ -76,6 +97,12 @@ export function Sidebar({
             {settings.label}
           </Link>
         )}
+        {languageFailed && (
+          <p role="alert" className="flex items-start gap-2 px-2 text-xs text-destructive">
+            <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+            {t("languageFailed")}
+          </p>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -89,6 +116,12 @@ export function Sidebar({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuLabel className="truncate text-xs text-muted-foreground">{user.email}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs text-muted-foreground">{t("language")}</DropdownMenuLabel>
+            <DropdownMenuRadioGroup value={locale} onValueChange={(value) => changeLanguage(value as AppLocale)}>
+              <DropdownMenuRadioItem value="en" lang="en">English</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="vi" lang="vi">Tiếng Việt</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={signOut}>
               <LogOut aria-hidden className="size-4" />
