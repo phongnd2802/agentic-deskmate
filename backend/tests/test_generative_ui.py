@@ -10,12 +10,13 @@ from pydantic_ai.models.function import FunctionModel
 
 import app.agent.chat as chat
 
-from app.agent.generative_ui import RENDER_TOOL
+from app.agent.generative_ui import A2UI_TOOL, RENDER_TOOL
 from tests.conftest import PROVIDER
 from app.agent import generative_ui
 from tests.test_conversations import _body, answers, start_run, stored, types
 
 BROWSER_TOOL = {"name": RENDER_TOOL, "description": "Render", "parameters": {"type": "object", "properties": {}}}
+TABLE_TOOL = {**BROWSER_TOOL, "name": A2UI_TOOL}  # the runtime injects this one into every run
 
 
 @pytest.fixture
@@ -30,7 +31,7 @@ async def gui_model(people):
 
 async def ask_with_tool(client, model_id: str, thread_id: str, question: str) -> list[dict]:
     """The browser always sends the render tool; the backend decides whether the Model is offered it."""
-    body = {**_body(thread_id, question, props={"modelId": model_id}), "tools": [BROWSER_TOOL]}
+    body = {**_body(thread_id, question, props={"modelId": model_id}), "tools": [BROWSER_TOOL, TABLE_TOOL]}
     async with client.stream("POST", "/agent", json=body) as response:
         lines = [line async for line in response.aiter_lines()]
     return [json.loads(line.removeprefix("data: ")) for line in lines if line.startswith("data: ")]
@@ -177,3 +178,94 @@ async def test_only_a_model_with_the_flag_is_told_about_openlink(people, gui_mod
     await ask_with_tool(people["member"], people["member"].model_id, str(uuid.uuid4()), "hello")
 
     assert "openLink" in seen[0] and "openLink" not in seen[1]
+
+
+# A2UI tables (issue #11): the same held and validated render path, with a catalog of one Table and no actions.
+GOOD_TABLE = {"surfaceId": "t", "components": [{"id": "root", "component": "Table", "title": "T", "columns": ["a", "b"], "rows": [["1", "2"]]}]}
+
+
+async def test_a_table_reaches_the_browser_whole_and_is_stored(people, gui_model):
+    thread = str(uuid.uuid4())
+    events = await ask_with_tool(people["member"], gui_model, thread, "[table] compare regions")
+
+    assert types(events)[-1] == "RUN_FINISHED"
+    [args] = [e for e in events if e["type"] == "TOOL_CALL_ARGS"]
+    [component] = json.loads(args["delta"])["components"]
+    assert component["component"] == "Table" and component["columns"] == ["Region", "Sales"]
+    [answer] = await answers(people["member"], thread)
+    assert answer["status"] == "complete"
+    assert answer["parts"][-1]["name"] == A2UI_TOOL and json.loads(answer["parts"][-1]["args"]) == json.loads(args["delta"])
+
+
+async def test_a_model_with_the_flag_off_is_not_offered_the_table_tool(people):
+    events = await ask_with_tool(people["member"], people["member"].model_id, str(uuid.uuid4()), "[table] compare regions")
+
+    assert types(events)[-1] == "RUN_FINISHED" and not [e for e in events if e["type"].startswith("TOOL_CALL")]
+
+
+async def test_an_unknown_component_fails_the_answer_and_a_retry_adds_another(people, gui_model):
+    thread = str(uuid.uuid4())
+    events = await ask_with_tool(people["member"], gui_model, thread, "[table-bad] compare regions")
+
+    assert types(events)[-1] == "RUN_ERROR" and events[-1]["code"] == "model_failed"
+    assert not [e for e in events if e["type"] == "TOOL_CALL_ARGS"]
+
+    body = {**_body(thread, "ignored", props={"modelId": gui_model, "retry": True}), "tools": [BROWSER_TOOL, TABLE_TOOL]}
+    async with people["member"].stream("POST", "/agent", json=body) as response:
+        [line async for line in response.aiter_lines()]
+    stored = await answers(people["member"], thread)
+    assert [a["status"] for a in stored] == ["failed", "complete"]
+    assert stored[1]["parts"][-1]["name"] == A2UI_TOOL
+
+
+def _with(**changes) -> str:
+    return json.dumps({**GOOD_TABLE, **changes})
+
+
+def _table(**changes) -> list[dict]:
+    return [{**GOOD_TABLE["components"][0], **changes}]
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        _with(components=[{"id": "root", "component": "Button", "label": "Run", "action": {"event": {"name": "go"}}}]),
+        _with(components=_table(action={"event": {"name": "go"}})),
+        _with(components=_table(component="Nope")),
+        _with(components=_table(columns=[])),
+        _with(components=_table(rows=[["1"]])),
+        _with(components=_table(rows=[["1", 2]])),
+        _with(components=_table(rows=[["North", 120]])),
+        _with(components=_table(title="")),
+        _with(components=_table(id="other")),
+        _with(components=_table() * 2),
+        _with(components=[]),
+        _with(surfaceId=""),
+        _with(data={"x": 1}),
+        '{"surfaceId":"t","components":[{"id":"root","comp',
+    ],
+)
+async def test_table_arguments_that_would_not_render_fail_the_answer(people, gui_model, args):
+    thread = str(uuid.uuid4())
+    events = await ask_with_tool(people["member"], gui_model, thread, f"[gui-raw {A2UI_TOOL} {args}]")
+
+    assert types(events)[-1] == "RUN_ERROR" and events[-1]["code"] == "model_failed"
+    assert not [e for e in events if e["type"] == "TOOL_CALL_ARGS"]
+    [answer] = await answers(people["member"], thread)
+    assert answer["status"] == "failed" and all(p["type"] == "text" for p in answer["parts"])
+
+
+async def test_only_a_model_with_the_flag_gets_the_table_schema_in_its_instructions(people, gui_model, monkeypatch):
+    # AGUIAdapter drops RunAgentInput.context, so the instructions carry the schema.
+    seen: list[str] = []
+
+    async def record(messages, info):
+        seen.append(info.instructions or "")
+        yield "ok"
+
+    monkeypatch.setattr(chat, "build_model", lambda choice: FunctionModel(stream_function=record, model_name="recorder"))
+    await ask_with_tool(people["member"], gui_model, str(uuid.uuid4()), "hello")
+    await ask_with_tool(people["member"], people["member"].model_id, str(uuid.uuid4()), "hello")
+
+    assert A2UI_TOOL in seen[0] and '"Table"' in seen[0] and "columns" in seen[0]
+    assert A2UI_TOOL not in seen[1]

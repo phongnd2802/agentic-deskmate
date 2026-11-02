@@ -3,6 +3,7 @@ import { CircleAlert, CircleStop } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
+import { StoredTable } from "@/components/a2ui-table";
 import { AnswerText } from "@/components/answer-text";
 import { StoredGenerativeUi } from "@/components/generative-ui";
 import { fetchConversation } from "@/lib/backend";
@@ -26,7 +27,8 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
             part.type === "text" ? (
               <AnswerText key={index} text={part.text} />
             ) : (
-              part.name === "generateSandboxedUi" && <StoredGenerativeUi key={index} args={part.args} />
+              (part.name === "generateSandboxedUi" && <StoredGenerativeUi key={index} args={part.args} />) ||
+              (part.name === "render_a2ui" && <StoredTable key={index} args={part.args} />)
             ),
           )}
           {answer.status === "stopped" && (

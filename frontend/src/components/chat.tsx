@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ComponentProps } from "react";
 import { useTranslations } from "next-intl";
 
+import { tableCatalog } from "@/components/a2ui-table";
 import { generativeUiRenderers, RunHaltedContext, useOpenLink, useSandboxedUiTool } from "@/components/generative-ui";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -237,6 +238,7 @@ export function Chat({ models }: { models: ChoosableModel[] }) {
         runtimeUrl="/api/copilotkit"
         properties={{ modelId: selected.id }}
         openGenerativeUI={{ sandboxFunctions }}
+        a2ui={{ catalog: tableCatalog }}
         renderActivityMessages={generativeUiRenderers}
       >
         {threadId && <ConversationChat key={threadId} threadId={threadId} />}
