@@ -16,11 +16,12 @@ from uuid import UUID
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerifyMismatchError
 from fastapi import Depends, HTTPException, Request
-from sqlalchemy import delete, select, text
+from sqlalchemy import delete, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Organization, Session
-from app.db.session import session_factory, set_organization
+from app.db.models import Organization, Session, User
+from app.db.session import scoped, session_factory, set_organization
+from app.schemas.auth import Locale
 from app.settings import SESSION_COOKIE, settings
 
 _hasher = PasswordHasher()
@@ -35,7 +36,7 @@ class CurrentUser:
     id: UUID
     email: str
     role: Literal["admin", "member"]
-    locale: str
+    locale: Locale | None
     organization_id: UUID
     organization_name: str
 
@@ -122,6 +123,11 @@ async def current_user(request: Request) -> CurrentUser:
             if found is None:
                 raise HTTPException(status_code=401, detail="Not signed in")
             return await _scoped_user(db, found)
+
+
+async def set_locale(user: CurrentUser, locale: Locale) -> None:
+    async with scoped(user.organization_id) as db:
+        await db.execute(update(User).where(User.id == user.id).values(locale=locale))
 
 
 async def admin_user(user: CurrentUser = Depends(current_user)) -> CurrentUser:

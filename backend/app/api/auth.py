@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
-from app.schemas.auth import CurrentUserOut, OrganizationOut, SignInRequest
-from app.services.auth import CurrentUser, InvalidCredentials, current_user, sign_in, sign_out
+from app.schemas.auth import CurrentUserOut, LocaleRequest, OrganizationOut, SignInRequest
+from app.services.auth import CurrentUser, InvalidCredentials, current_user, set_locale, sign_in, sign_out
 from app.settings import SESSION_COOKIE, settings
 
 router = APIRouter()
@@ -48,3 +48,8 @@ async def sign_out_route(request: Request, response: Response) -> None:
 @router.get("/auth/me", response_model=CurrentUserOut)
 async def me(user: CurrentUser = Depends(current_user)) -> CurrentUserOut:
     return _to_out(user)
+
+
+@router.put("/auth/locale", status_code=204)
+async def set_locale_route(body: LocaleRequest, user: CurrentUser = Depends(current_user)) -> None:
+    await set_locale(user, body.locale)

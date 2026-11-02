@@ -23,14 +23,18 @@ class Organization(Base):
 
 class User(Base):
     __tablename__ = "users"
-    __table_args__ = (CheckConstraint("role IN ('admin', 'member')", name="users_role_check"),)
+    __table_args__ = (
+        CheckConstraint("role IN ('admin', 'member')", name="users_role_check"),
+        CheckConstraint("locale IN ('en', 'vi')", name="users_locale_check"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
     email: Mapped[str] = mapped_column(String(320), unique=True)
     password_hash: Mapped[str] = mapped_column(Text)
     role: Mapped[str] = mapped_column(String(10))
-    locale: Mapped[str] = mapped_column(String(5), default="en")
+    # None means the browser decides until the User picks a language.
+    locale: Mapped[str | None] = mapped_column(String(5))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

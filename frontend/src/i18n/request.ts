@@ -1,6 +1,8 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
 
+import { getCurrentUser } from "@/lib/auth";
+
 const locales = ["en", "vi"] as const;
 
 export type AppLocale = (typeof locales)[number];
@@ -19,7 +21,8 @@ function fromAcceptLanguage(header: string | null): AppLocale {
 }
 
 export default getRequestConfig(async () => {
-  const preferred = (await cookies()).get("NEXT_LOCALE")?.value;
+  // The User's saved language wins so it follows them to a new device; the cookie covers signed-out pages.
+  const preferred = (await getCurrentUser())?.locale ?? (await cookies()).get("NEXT_LOCALE")?.value;
   const locale = isLocale(preferred) ? preferred : fromAcceptLanguage((await headers()).get("accept-language"));
 
   return { locale, messages: (await import(`../../messages/${locale}.json`)).default };

@@ -40,6 +40,8 @@
     "noRegistration": "Quản trị viên của Tổ chức thêm người dùng. Hãy nhờ họ gửi lời mời."
   },
   "userMenu": {
+    "languageFailed": "Không thể lưu ngôn ngữ. Thử lại.",
+    "language": "Ngôn ngữ",
     "menuLabel": "Menu người dùng",
     "signOut": "Đăng xuất"
   },
