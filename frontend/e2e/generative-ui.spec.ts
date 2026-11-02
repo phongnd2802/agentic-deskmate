@@ -277,3 +277,21 @@ test.describe("in dark mode", () => {
     expect(luminance(text)).toBeGreaterThan(luminance(background));
   });
 });
+
+test("stopping while the interface is written clears the placeholder, and reopening runs no partial code", async ({ page }) => {
+  const { a } = readCredentials();
+  await signIn(page, a);
+  await openChat(page);
+  const threadId = await ask(page, `[gui-stall] Stop me ${Date.now()}`, UI_MODEL);
+  await expect(page.getByText("Building the Generative UI")).toBeVisible({ timeout: 30_000 });
+
+  await page.getByRole("button", { name: "Stop" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Stopped" })).toBeVisible();
+  await expect(page.getByText("Building the Generative UI")).toHaveCount(0);
+  await expect(page.locator("iframe")).toHaveCount(0);
+
+  await page.goto(`/chat/${threadId}`);
+  await expect(page.getByText("Started writing.")).toBeVisible();
+  await expect(page.getByText("Building the Generative UI")).toHaveCount(0);
+  await expect(page.locator("iframe")).toHaveCount(0);
+});
