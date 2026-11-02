@@ -94,8 +94,12 @@ def a2ui_prompt() -> str:
 
 
 def offered(tools: list, enabled: bool) -> list:
-    """The browser sends its tools, but a Model gets the render tools only when its Generative UI flag is on, and no other."""
-    return [t for t in tools if enabled and t.name in ARGS]
+    """The browser sends its tools, but a Model gets the render tools only when its Generative UI flag is on, and no other.
+
+    The runtime's render_a2ui describes the basic catalog and context the Model never gets, so it is replaced with ours.
+    """
+    table = {"description": A2UI_PROMPT.removesuffix(" Component schema: "), "parameters": A2uiArgs.model_json_schema()}
+    return [t.model_copy(update=table) if t.name == A2UI_TOOL else t for t in tools if enabled and t.name in ARGS]
 
 
 async def hold_render_calls(events: AsyncIterator, enabled: bool) -> AsyncIterator:

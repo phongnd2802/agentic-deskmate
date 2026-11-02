@@ -269,3 +269,19 @@ async def test_only_a_model_with_the_flag_gets_the_table_schema_in_its_instructi
 
     assert A2UI_TOOL in seen[0] and '"Table"' in seen[0] and "columns" in seen[0]
     assert A2UI_TOOL not in seen[1]
+
+
+async def test_the_table_tool_reaches_the_model_described_by_our_catalog(people, gui_model, monkeypatch):
+    # The runtime's render_a2ui points at context the Model never gets and offers a data model the catalog rejects.
+    seen: list = []
+
+    async def record(messages, info):
+        seen.extend(t for t in info.function_tools if t.name == A2UI_TOOL)
+        yield "ok"
+
+    monkeypatch.setattr(chat, "build_model", lambda choice: FunctionModel(stream_function=record, model_name="recorder"))
+    await ask_with_tool(people["member"], gui_model, str(uuid.uuid4()), "hello")
+
+    [tool] = seen
+    assert tool.description != TABLE_TOOL["description"] and "Table" in tool.description
+    assert tool.parameters_json_schema == generative_ui.A2uiArgs.model_json_schema()
