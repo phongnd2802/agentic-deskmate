@@ -26,7 +26,11 @@ def upgrade() -> None:
             user_id uuid REFERENCES users(id) ON DELETE CASCADE,
             expires_at timestamptz NOT NULL,
             used_at timestamptz,
-            created_at timestamptz NOT NULL DEFAULT now()
+            created_at timestamptz NOT NULL DEFAULT now(),
+            CONSTRAINT access_links_target_check CHECK (
+                (kind = 'invitation' AND email IS NOT NULL AND user_id IS NULL)
+                OR (kind = 'reset' AND user_id IS NOT NULL AND email IS NULL)
+            )
         );
         """
     )

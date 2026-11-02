@@ -49,7 +49,13 @@ class AccessLink(Base):
     """An Invitation (email to register) or a password reset (User). Only the token's hash is stored."""
 
     __tablename__ = "access_links"
-    __table_args__ = (CheckConstraint("kind IN ('invitation', 'reset')", name="access_links_kind_check"),)
+    __table_args__ = (
+        CheckConstraint("kind IN ('invitation', 'reset')", name="access_links_kind_check"),
+        CheckConstraint(
+            "(kind = 'invitation' AND email IS NOT NULL AND user_id IS NULL) OR (kind = 'reset' AND user_id IS NOT NULL AND email IS NULL)",
+            name="access_links_target_check",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)

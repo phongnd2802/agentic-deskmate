@@ -169,18 +169,19 @@
     "linkExpires": "Dùng được một lần, đến {date}.",
     "linkCopy": "Sao chép liên kết",
     "linkCopied": "Đã sao chép",
-    "linkDismiss": "Đóng liên kết"
+    "linkDismiss": "Đóng liên kết",
+    "copyFailed": "Không thể sao chép. Hãy chọn liên kết và sao chép thủ công."
   },
   "accessLink": {
     "invitationTitle": "Tham gia {organization}",
-    "invitationDescription": "Chọn mật khẩu để tạo tài khoản cho {email}.",
+    "invitationDescription": "Chọn mật khẩu để tham gia bằng email {email}.",
     "resetTitle": "Đặt mật khẩu mới",
     "resetDescription": "Chọn mật khẩu mới cho {email}.",
     "password": "Mật khẩu mới",
     "passwordHelp": "Ít nhất 8 ký tự.",
     "submit": "Đặt mật khẩu",
     "submitting": "Đang lưu…",
-    "doneInvitation": "Tài khoản của bạn đã sẵn sàng. Hãy đăng nhập bằng {email}.",
+    "doneInvitation": "Bạn đã là người dùng của Tổ chức. Hãy đăng nhập bằng {email}.",
     "doneReset": "Mật khẩu của bạn đã được đổi. Hãy đăng nhập bằng {email}.",
     "signIn": "Đến trang đăng nhập",
     "problemTitle": "Không thể dùng liên kết này",

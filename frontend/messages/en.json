@@ -169,18 +169,19 @@
     "linkExpires": "Works once, until {date}.",
     "linkCopy": "Copy link",
     "linkCopied": "Copied",
-    "linkDismiss": "Close link"
+    "linkDismiss": "Close link",
+    "copyFailed": "Could not copy. Select the link and copy it by hand."
   },
   "accessLink": {
     "invitationTitle": "Join {organization}",
-    "invitationDescription": "Choose a password to create your account for {email}.",
+    "invitationDescription": "Choose a password to join as {email}.",
     "resetTitle": "Set a new password",
     "resetDescription": "Choose a new password for {email}.",
     "password": "New password",
     "passwordHelp": "At least 8 characters.",
     "submit": "Set password",
     "submitting": "Saving…",
-    "doneInvitation": "Your account is ready. Sign in with {email}.",
+    "doneInvitation": "You are now a User of this Organization. Sign in with {email}.",
     "doneReset": "Your password is changed. Sign in with {email}.",
     "signIn": "Go to sign in",
     "problemTitle": "This link cannot be used",

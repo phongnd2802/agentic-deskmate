@@ -215,3 +215,14 @@ def test_every_route_but_the_listed_ones_requires_an_admin():
         if needed not in guards(route):
             unguarded.append(route.path)
     assert unguarded == []
+
+
+async def test_using_a_reset_link_voids_the_users_other_reset_links(people):
+    admin = people["admin"]
+    member_id = (await people["member"].get("/auth/me")).json()["id"]
+    first = (await admin.post(f"/users/{member_id}/password-reset")).json()["token"]
+    second = (await admin.post(f"/users/{member_id}/password-reset")).json()["token"]
+    async with anonymous() as client:
+        assert (await client.post(f"/password-resets/{first}/accept", json={"password": NEW_PASSWORD})).status_code == 204
+        refused = await client.post(f"/password-resets/{second}/accept", json={"password": "other-pass-99"})
+    assert refused.status_code == 410 and refused.json()["detail"]["code"] == "link_used"
