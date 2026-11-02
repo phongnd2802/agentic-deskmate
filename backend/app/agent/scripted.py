@@ -7,7 +7,7 @@ from collections.abc import AsyncIterator
 
 from pydantic_ai.models.function import DeltaToolCall
 
-from app.agent.generative_ui import RENDER_TOOL
+from app.agent.generative_ui import A2UI_TOOL, RENDER_TOOL
 
 ANSWER = """## Scripted Answer
 
@@ -83,6 +83,12 @@ LINKS = {
 }
 
 
+TABLE = {
+    "surfaceId": "sales",
+    "components": [{"id": "root", "component": "Table", "title": "Sales by region", "columns": ["Region", "Sales"], "rows": [["North", "120"], ["South", "340"], ["Central", "90"]]}],
+}
+
+
 async def _render_call(args: dict | str, name: str = RENDER_TOOL, index: int = 0) -> AsyncIterator[dict]:
     """A tool call streamed in pieces; a string is sent as the raw arguments, valid JSON or not."""
     raw = args if isinstance(args, str) else json.dumps(args)
@@ -115,6 +121,13 @@ async def stream_answer(messages, info) -> AsyncIterator[str | dict]:
         for index in (0, 1):
             async for delta in _render_call(SLIDER, index=index):
                 yield delta
+        return
+    if any(tool.name == A2UI_TOOL for tool in info.function_tools) and "[table" in question:
+        yield "Here is the table. "
+        # An unknown component, once; the retry succeeds.
+        bad = {**TABLE, "components": [{"id": "root", "component": "Nope", "title": "x"}]}
+        async for delta in _render_call(bad if _misbehaves("[table-bad]", question) else TABLE, A2UI_TOOL):
+            yield delta
         return
     if offered and "[gui-stall]" in question:
         yield "Started writing. "

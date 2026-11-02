@@ -8,6 +8,8 @@ export function routes(basePath: string) {
     agents: { default: new HttpAgent({ url: `${backendUrl}/agent` }) },
     // Turns the Model's generateSandboxedUi call into the activity the browser renders.
     openGenerativeUI: true,
+    // Turns the Model's render_a2ui call into a table surface; the catalog is the browser's.
+    a2ui: { injectA2UITool: true, defaultCatalogId: "copilotkit://deskmate-tables" },
     forwardHeaders: { allow: ["cookie"] },
     identifyUser: async (request: Request) => {
       const user = await fetchCurrentUser(request.headers.get("cookie") ?? "");
