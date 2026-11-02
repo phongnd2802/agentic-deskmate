@@ -147,8 +147,49 @@
       "invalid_base_url": "Enter an http or https address that can be resolved, without a user name or password.",
       "name_taken": "A Provider with this name already exists.",
       "key_required": "Enter the API key.",
-      "deleteFailed": "The Provider could not be deleted. Try again."
+      "deleteFailed": "The Provider could not be deleted. Try again.",
+      "email_taken": "This email is already in use.",
+      "linkFailed": "The link could not be created. Try again."
     },
-    "baseUrlPlaceholder": "https://api.example.com/v1"
+    "baseUrlPlaceholder": "https://api.example.com/v1",
+    "users": "Users",
+    "inviteTitle": "Invite a User",
+    "inviteEmail": "Email",
+    "invite": "Create Invitation link",
+    "inviting": "Creating…",
+    "inviteHelp": "No email is sent. Copy the link and give it to the person yourself.",
+    "email": "Email",
+    "role": "Role",
+    "roles": {
+      "admin": "Admin",
+      "member": "Member"
+    },
+    "resetNamed": "Create password reset link for {name}",
+    "linkFor": "Link for {email}",
+    "linkExpires": "Works once, until {date}.",
+    "linkCopy": "Copy link",
+    "linkCopied": "Copied",
+    "linkDismiss": "Close link"
+  },
+  "accessLink": {
+    "invitationTitle": "Join {organization}",
+    "invitationDescription": "Choose a password to create your account for {email}.",
+    "resetTitle": "Set a new password",
+    "resetDescription": "Choose a new password for {email}.",
+    "password": "New password",
+    "passwordHelp": "At least 8 characters.",
+    "submit": "Set password",
+    "submitting": "Saving…",
+    "doneInvitation": "Your account is ready. Sign in with {email}.",
+    "doneReset": "Your password is changed. Sign in with {email}.",
+    "signIn": "Go to sign in",
+    "problemTitle": "This link cannot be used",
+    "error": {
+      "link_invalid": "This link is not valid. Ask your Admin for a new one.",
+      "link_used": "This link has already been used. Ask your Admin for a new one if you still need it.",
+      "link_expired": "This link has expired. Ask your Admin for a new one.",
+      "email_taken": "This email is already in use.",
+      "generic": "Could not save the password. Check it is at least 8 characters and try again."
+    }
   }
 }

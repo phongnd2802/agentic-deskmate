@@ -48,3 +48,20 @@ export async function fetchModels(cookie: string): Promise<ChoosableModel[]> {
 export async function fetchProviders(cookie: string): Promise<Provider[]> {
   return (await fetchJson<Provider[]>("/providers", cookie)) ?? [];
 }
+
+export type OrganizationUser = components["schemas"]["UserOut"];
+
+/** The Organization's Users; the backend refuses anyone but an Admin. */
+export async function fetchUsers(cookie: string): Promise<OrganizationUser[]> {
+  return (await fetchJson<OrganizationUser[]>("/users", cookie)) ?? [];
+}
+
+export type LinkPreview = components["schemas"]["LinkPreviewOut"];
+
+/** Who an Invitation or password reset link is for, or the error code saying why it cannot be used. No session: the link is the proof. */
+export async function fetchLinkPreview(kind: "invitations" | "password-resets", token: string): Promise<LinkPreview | { code: string }> {
+  const response = await fetch(`${backendUrl}/${kind}/${encodeURIComponent(token)}`, { cache: "no-store" });
+  if (response.ok) return (await response.json()) as LinkPreview;
+  const body = await response.json().catch(() => null);
+  return { code: typeof body?.detail?.code === "string" ? body.detail.code : "generic" };
+}
