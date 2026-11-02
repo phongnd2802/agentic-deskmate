@@ -97,3 +97,36 @@ async def test_rls_isolates_conversations_questions_and_answers(owner_conn, app_
         ["conversations", "questions", "answers"],
     )
     assert len(flags) == 3 and all(r["relrowsecurity"] and r["relforcerowsecurity"] for r in flags)
+
+
+@pytest.mark.asyncio
+async def test_rls_isolates_access_links(owner_conn, app_conn):
+    org_a, org_b = uuid.uuid4(), uuid.uuid4()
+    for org in (org_a, org_b):
+        await owner_conn.execute("INSERT INTO organizations (id, name) VALUES ($1, $2)", org, f"Org {org}")
+        await owner_conn.execute(
+            "INSERT INTO access_links (id, organization_id, kind, token_hash, email, expires_at)"
+            " VALUES ($1,$2,'invitation',$3,$4,now() + interval '1 day')",
+            uuid.uuid4(), org, uuid.uuid4().hex + uuid.uuid4().hex, f"i-{org}@example.com",
+        )
+
+    # No WHERE clause: only Row-Level Security separates the Organizations.
+    async with app_conn.transaction():
+        await app_conn.execute("SELECT set_config('app.organization_id', $1, true)", str(org_a))
+        rows = await app_conn.fetch("SELECT organization_id FROM access_links")
+        assert [r["organization_id"] for r in rows] == [org_a]
+    async with app_conn.transaction():
+        await app_conn.execute("SELECT set_config('app.organization_id', $1, true)", str(uuid.uuid4()))
+        assert await app_conn.fetch("SELECT 1 FROM access_links") == []
+
+    async with app_conn.transaction():
+        await app_conn.execute("SELECT set_config('app.organization_id', $1, true)", str(org_a))
+        with pytest.raises(asyncpg.PostgresError):
+            await app_conn.execute(
+                "INSERT INTO access_links (id, organization_id, kind, token_hash, email, expires_at)"
+                " VALUES ($1,$2,'invitation',$3,'x@example.com',now())",
+                uuid.uuid4(), org_b, uuid.uuid4().hex + uuid.uuid4().hex,
+            )
+
+    flags = await owner_conn.fetchrow("SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE relname = 'access_links'")
+    assert flags["relrowsecurity"] and flags["relforcerowsecurity"]

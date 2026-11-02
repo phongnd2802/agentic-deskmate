@@ -45,6 +45,29 @@ class Session(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class AccessLink(Base):
+    """An Invitation (email to register) or a password reset (User). Only the token's hash is stored."""
+
+    __tablename__ = "access_links"
+    __table_args__ = (
+        CheckConstraint("kind IN ('invitation', 'reset')", name="access_links_kind_check"),
+        CheckConstraint(
+            "(kind = 'invitation' AND email IS NOT NULL AND user_id IS NULL) OR (kind = 'reset' AND user_id IS NOT NULL AND email IS NULL)",
+            name="access_links_target_check",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), index=True)
+    kind: Mapped[str] = mapped_column(String(10))
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    email: Mapped[str | None] = mapped_column(String(320))
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Provider(Base):
     __tablename__ = "providers"
     __table_args__ = (

@@ -147,8 +147,50 @@
       "invalid_base_url": "Nhập địa chỉ http hoặc https có thể phân giải, không kèm tên người dùng hay mật khẩu.",
       "name_taken": "Đã có Nhà cung cấp với tên này.",
       "key_required": "Nhập khóa API.",
-      "deleteFailed": "Không thể xóa Nhà cung cấp. Hãy thử lại."
+      "deleteFailed": "Không thể xóa Nhà cung cấp. Hãy thử lại.",
+      "email_taken": "Email này đã được sử dụng.",
+      "linkFailed": "Không thể tạo liên kết. Hãy thử lại."
     },
-    "baseUrlPlaceholder": "https://api.example.com/v1"
+    "baseUrlPlaceholder": "https://api.example.com/v1",
+    "users": "Người dùng",
+    "inviteTitle": "Mời một người dùng",
+    "inviteEmail": "Email",
+    "invite": "Tạo liên kết lời mời",
+    "inviting": "Đang tạo…",
+    "inviteHelp": "Không có email nào được gửi. Hãy sao chép liên kết và tự gửi cho người đó.",
+    "email": "Email",
+    "role": "Vai trò",
+    "roles": {
+      "admin": "Admin",
+      "member": "Thành viên"
+    },
+    "resetNamed": "Tạo liên kết đặt lại mật khẩu cho {name}",
+    "linkFor": "Liên kết cho {email}",
+    "linkExpires": "Dùng được một lần, đến {date}.",
+    "linkCopy": "Sao chép liên kết",
+    "linkCopied": "Đã sao chép",
+    "linkDismiss": "Đóng liên kết",
+    "copyFailed": "Không thể sao chép. Hãy chọn liên kết và sao chép thủ công."
+  },
+  "accessLink": {
+    "invitationTitle": "Tham gia {organization}",
+    "invitationDescription": "Chọn mật khẩu để tham gia bằng email {email}.",
+    "resetTitle": "Đặt mật khẩu mới",
+    "resetDescription": "Chọn mật khẩu mới cho {email}.",
+    "password": "Mật khẩu mới",
+    "passwordHelp": "Ít nhất 8 ký tự.",
+    "submit": "Đặt mật khẩu",
+    "submitting": "Đang lưu…",
+    "doneInvitation": "Bạn đã là người dùng của Tổ chức. Hãy đăng nhập bằng {email}.",
+    "doneReset": "Mật khẩu của bạn đã được đổi. Hãy đăng nhập bằng {email}.",
+    "signIn": "Đến trang đăng nhập",
+    "problemTitle": "Không thể dùng liên kết này",
+    "error": {
+      "link_invalid": "Liên kết này không hợp lệ. Hãy nhờ Admin gửi liên kết mới.",
+      "link_used": "Liên kết này đã được sử dụng. Nếu vẫn cần, hãy nhờ Admin gửi liên kết mới.",
+      "link_expired": "Liên kết này đã hết hạn. Hãy nhờ Admin gửi liên kết mới.",
+      "email_taken": "Email này đã được sử dụng.",
+      "generic": "Không thể lưu mật khẩu. Hãy kiểm tra mật khẩu có ít nhất 8 ký tự và thử lại."
+    }
   }
 }

@@ -55,7 +55,7 @@ def _verify_password(password: str, password_hash: str) -> bool:
         return False
 
 
-async def _lookup_user(db: AsyncSession, email: str) -> dict | None:
+async def lookup_user(db: AsyncSession, email: str) -> dict | None:
     row = (await db.execute(text("SELECT * FROM auth_lookup_user(:email)"), {"email": email})).mappings().first()
     return dict(row) if row else None
 
@@ -83,7 +83,7 @@ async def sign_in(email: str, password: str) -> tuple[str, CurrentUser]:
     normalized = email.strip().lower()
     async with session_factory() as db:
         async with db.begin():
-            user = await _lookup_user(db, normalized)
+            user = await lookup_user(db, normalized)
             if user is None or not _verify_password(password, user["password_hash"]):
                 raise InvalidCredentials
 

@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     # Owner connection for migrations and the Operator CLI; it bypasses RLS.
     migration_database_url: str | None = None
     session_ttl_days: int = 30
+    # How long an Invitation or a password reset link works.
+    invitation_ttl_days: int = 7
+    password_reset_ttl_hours: int = 24
     # Secure cookie: on everywhere except local development over plain HTTP.
     session_cookie_secure: bool = True
 
