@@ -114,6 +114,13 @@
     "model": "Model",
     "noProvider": "Your Organization has no Provider yet, so questions cannot be answered. Ask an Admin to add one in Settings."
   },
+  "generativeUi": {
+    "writing": "Building the Generative UI…",
+    "openLinkTitle": "Open this link?",
+    "openLinkBody": "This Generative UI wants to open a link in a new tab. Check the address first.",
+    "cancel": "Cancel",
+    "open": "Open link"
+  },
   "settings": {
     "title": "Settings",
     "providers": "Providers",

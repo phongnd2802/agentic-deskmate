@@ -21,6 +21,7 @@ from fastapi.responses import StreamingResponse
 from pydantic_ai.ui.ag_ui import AGUIAdapter
 
 from app.agent.chat import build_agent
+from app.agent.generative_ui import hold_render_calls, offered
 from app.net import BlockedAddress, resolve_allowed
 from app.services import conversations, providers
 from app.schemas.conversations import AnswerStatus
@@ -183,7 +184,10 @@ async def agent(request: Request, user: CurrentUser = Depends(current_user)):
 
     adapter.agent = build_agent(choice)
     # The browser's history is never trusted: the run sees only this question.
-    adapter.run_input = run.model_copy(update={"messages": [UserMessage(id=str(question_id), content=question)]})
+    # Nor its tools: the Model is offered the render tool only when its flag is on.
+    adapter.run_input = run.model_copy(
+        update={"messages": [UserMessage(id=str(question_id), content=question)], "tools": offered(run.tools, choice.generative_ui)}
+    )
 
     async def stream():
         # Claimed here, not earlier, so a response that is never iterated holds nothing. Two retries that both passed the
@@ -195,7 +199,7 @@ async def agent(request: Request, user: CurrentUser = Depends(current_user)):
         parts: list[dict] = []
         saved = False
         try:
-            async for event in adapter.run_stream():
+            async for event in hold_render_calls(adapter.run_stream(), choice.generative_ui):
                 _track(parts, event)
                 if isinstance(event, RunErrorEvent):
                     logger.warning("Model failed in Conversation %s: %s", conversation_id, event.message.replace(choice.api_key, "***"))

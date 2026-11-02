@@ -155,12 +155,12 @@ async def answers(client: httpx2.AsyncClient, thread_id: str) -> list[dict]:
     return (await client.get(f"/conversations/{thread_id}")).json()["answers"]
 
 
-def start_run(client: httpx2.AsyncClient, thread_id: str, question: str, props: dict | None = None):
+def start_run(client: httpx2.AsyncClient, thread_id: str, question: str, props: dict | None = None, tools: list | None = None):
     """Run /agent straight through ASGI, so a test can hang up the way a runner aborting its fetch does.
 
     The test transport buffers a whole response, so it cannot disconnect mid-stream.
     """
-    body = json.dumps(_body(thread_id, question, props={"modelId": client.model_id, **(props or {})})).encode()
+    body = json.dumps({**_body(thread_id, question, props={"modelId": client.model_id, **(props or {})}), "tools": tools or []}).encode()
     cookie = "; ".join(f"{name}={value}" for name, value in client.cookies.items())
     first_text, hang_up, sent = asyncio.Event(), asyncio.Event(), False
 

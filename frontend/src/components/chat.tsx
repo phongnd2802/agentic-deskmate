@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState, type ComponentProps } from "react";
 import { useTranslations } from "next-intl";
 
+import { generativeUiRenderers, RunHaltedContext, useOpenLink, useSandboxedUiTool } from "@/components/generative-ui";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -76,6 +77,7 @@ function ConversationChat({ threadId }: { threadId: string }) {
   const t = useTranslations("chat");
   const router = useRouter();
   const { agent } = useAgent({ agentId: AGENT_ID });
+  useSandboxedUiTool();
   const { copilotkit } = useCopilotKit();
   const [answered, setAnswered] = useState(false);
   const [used, setUsed] = useState<Used | null>(null);
@@ -137,81 +139,83 @@ function ConversationChat({ threadId }: { threadId: string }) {
   return (
     <UsedContext.Provider value={used}>
       <LockedContext.Provider value={answered}>
-        <div className="flex h-full flex-col">
-          <div ref={chatRef} className="min-h-0 flex-1">
-            <CopilotChat
-              agentId={AGENT_ID}
-              threadId={threadId}
-              input={Composer}
-              labels={{
-                chatInputPlaceholder: t("inputPlaceholder"),
-                chatInputToolbarSendButtonLabel: t("sendButton"),
-                chatInputToolbarStopButtonLabel: t("stopButton"),
-                chatDisclaimerText: t("disclaimer"),
-                chatInputToolbarStartTranscribeButtonLabel: t("startTranscribeButton"),
-                chatInputToolbarCancelTranscribeButtonLabel: t("cancelTranscribeButton"),
-                chatInputToolbarFinishTranscribeButtonLabel: t("finishTranscribeButton"),
-                chatInputToolbarAddButtonLabel: t("addButton"),
-                chatInputToolbarToolsButtonLabel: t("toolsButton"),
-                assistantMessageToolbarCopyCodeLabel: t("copyCode"),
-                assistantMessageToolbarCopyCodeCopiedLabel: t("copiedCode"),
-                assistantMessageToolbarCopyMessageLabel: t("copyMessage"),
-                assistantMessageToolbarThumbsUpLabel: t("thumbsUp"),
-                assistantMessageToolbarThumbsDownLabel: t("thumbsDown"),
-                assistantMessageFeedbackCommentPlaceholder: t("feedbackCommentPlaceholder"),
-                assistantMessageFeedbackCommentSubmitLabel: t("feedbackCommentSubmit"),
-                assistantMessageToolbarReadAloudLabel: t("readAloud"),
-                assistantMessageToolbarRegenerateLabel: t("regenerate"),
-                assistantMessageToolbarInspectorLabel: t("inspector"),
-                assistantMessageToolbarInspectorDescription: t("inspectorDescription"),
-                assistantMessageToolbarInspectorLocalOnlyLabel: t("inspectorLocalOnly"),
-                assistantMessageToolbarInspectorLocalOnlyDescription: t("inspectorLocalOnlyDescription"),
-                assistantMessageToolbarInspectorTitle: t("inspectorTitle"),
-                assistantMessageToolbarInspectorHideLabel: t("inspectorHide"),
-                assistantMessageToolbarInspectorHideDescription: t("inspectorHideDescription"),
-                userMessageToolbarCopyMessageLabel: t("copyUserMessage"),
-                userMessageToolbarEditMessageLabel: t("editMessage"),
-                userMessageToolbarPreviousBranchLabel: t("previousBranch"),
-                userMessageToolbarNextBranchLabel: t("nextBranch"),
-                chatToggleOpenLabel: t("toggleOpen"),
-                chatToggleCloseLabel: t("toggleClose"),
-                chatScrollToBottomLabel: t("scrollToBottom"),
-                modalHeaderTitle: t("modalTitle"),
-                welcomeMessageText: t("welcome"),
-                reasoningMessageThinkingLabel: t("thinking"),
-                chatInputSlashMenuLabel: t("slashMenu"),
-                chatInputSlashMenuEmptyText: t("slashMenuEmpty"),
-                attachmentRemoveButtonLabel: t("removeAttachment"),
-                attachmentPlayVideoButtonLabel: t("playVideo"),
-                attachmentPreviewCloseButtonLabel: t("closePreview"),
-                modalHeaderCloseButtonLabel: t("close"),
-                modalHeaderThreadsButtonLabel: t("openThreads"),
-                sidebarLabel: t("sidebar"),
-              }}
-            />
-          </div>
-          {(error || ended) && !retrying && (
-            <div className="mx-auto flex w-full max-w-3xl flex-wrap items-center gap-2 px-4 pb-2 text-sm">
-              {ended === "stopped" && !error ? (
-                <p role="status" className="flex items-start gap-2 text-warning">
-                  <CircleStop aria-hidden className="mt-0.5 size-4 shrink-0" />
-                  {t("stopped")}
-                </p>
-              ) : (
-                <p role="alert" className="flex items-start gap-2 text-destructive">
-                  <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
-                  {error && t(error)}
-                </p>
-              )}
-              {ended && (
-                <Button ref={retryRef} variant="outline" size="sm" onClick={retry}>
-                  <RotateCcw aria-hidden />
-                  {t("retry")}
-                </Button>
-              )}
+        <RunHaltedContext.Provider value={ended !== null && !retrying}>
+          <div className="flex h-full flex-col">
+            <div ref={chatRef} className="min-h-0 flex-1">
+              <CopilotChat
+                agentId={AGENT_ID}
+                threadId={threadId}
+                input={Composer}
+                labels={{
+                  chatInputPlaceholder: t("inputPlaceholder"),
+                  chatInputToolbarSendButtonLabel: t("sendButton"),
+                  chatInputToolbarStopButtonLabel: t("stopButton"),
+                  chatDisclaimerText: t("disclaimer"),
+                  chatInputToolbarStartTranscribeButtonLabel: t("startTranscribeButton"),
+                  chatInputToolbarCancelTranscribeButtonLabel: t("cancelTranscribeButton"),
+                  chatInputToolbarFinishTranscribeButtonLabel: t("finishTranscribeButton"),
+                  chatInputToolbarAddButtonLabel: t("addButton"),
+                  chatInputToolbarToolsButtonLabel: t("toolsButton"),
+                  assistantMessageToolbarCopyCodeLabel: t("copyCode"),
+                  assistantMessageToolbarCopyCodeCopiedLabel: t("copiedCode"),
+                  assistantMessageToolbarCopyMessageLabel: t("copyMessage"),
+                  assistantMessageToolbarThumbsUpLabel: t("thumbsUp"),
+                  assistantMessageToolbarThumbsDownLabel: t("thumbsDown"),
+                  assistantMessageFeedbackCommentPlaceholder: t("feedbackCommentPlaceholder"),
+                  assistantMessageFeedbackCommentSubmitLabel: t("feedbackCommentSubmit"),
+                  assistantMessageToolbarReadAloudLabel: t("readAloud"),
+                  assistantMessageToolbarRegenerateLabel: t("regenerate"),
+                  assistantMessageToolbarInspectorLabel: t("inspector"),
+                  assistantMessageToolbarInspectorDescription: t("inspectorDescription"),
+                  assistantMessageToolbarInspectorLocalOnlyLabel: t("inspectorLocalOnly"),
+                  assistantMessageToolbarInspectorLocalOnlyDescription: t("inspectorLocalOnlyDescription"),
+                  assistantMessageToolbarInspectorTitle: t("inspectorTitle"),
+                  assistantMessageToolbarInspectorHideLabel: t("inspectorHide"),
+                  assistantMessageToolbarInspectorHideDescription: t("inspectorHideDescription"),
+                  userMessageToolbarCopyMessageLabel: t("copyUserMessage"),
+                  userMessageToolbarEditMessageLabel: t("editMessage"),
+                  userMessageToolbarPreviousBranchLabel: t("previousBranch"),
+                  userMessageToolbarNextBranchLabel: t("nextBranch"),
+                  chatToggleOpenLabel: t("toggleOpen"),
+                  chatToggleCloseLabel: t("toggleClose"),
+                  chatScrollToBottomLabel: t("scrollToBottom"),
+                  modalHeaderTitle: t("modalTitle"),
+                  welcomeMessageText: t("welcome"),
+                  reasoningMessageThinkingLabel: t("thinking"),
+                  chatInputSlashMenuLabel: t("slashMenu"),
+                  chatInputSlashMenuEmptyText: t("slashMenuEmpty"),
+                  attachmentRemoveButtonLabel: t("removeAttachment"),
+                  attachmentPlayVideoButtonLabel: t("playVideo"),
+                  attachmentPreviewCloseButtonLabel: t("closePreview"),
+                  modalHeaderCloseButtonLabel: t("close"),
+                  modalHeaderThreadsButtonLabel: t("openThreads"),
+                  sidebarLabel: t("sidebar"),
+                }}
+              />
             </div>
-          )}
-        </div>
+            {(error || ended) && !retrying && (
+              <div className="mx-auto flex w-full max-w-3xl flex-wrap items-center gap-2 px-4 pb-2 text-sm">
+                {ended === "stopped" && !error ? (
+                  <p role="status" className="flex items-start gap-2 text-warning">
+                    <CircleStop aria-hidden className="mt-0.5 size-4 shrink-0" />
+                    {t("stopped")}
+                  </p>
+                ) : (
+                  <p role="alert" className="flex items-start gap-2 text-destructive">
+                    <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+                    {error && t(error)}
+                  </p>
+                )}
+                {ended && (
+                  <Button ref={retryRef} variant="outline" size="sm" onClick={retry}>
+                    <RotateCcw aria-hidden />
+                    {t("retry")}
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        </RunHaltedContext.Provider>
       </LockedContext.Provider>
     </UsedContext.Provider>
   );
@@ -225,12 +229,19 @@ export function Chat({ models }: { models: ChoosableModel[] }) {
   const [picked, setPicked] = useState(models[0].id);
   // The list can change under an open page (an Admin edits a Provider); fall back to the first Model.
   const selected = models.find((model) => model.id === picked) ?? models[0];
+  const { sandboxFunctions, linkDialog } = useOpenLink();
 
   return (
     <ModelContext.Provider value={{ models, selected, select: setPicked }}>
-      <CopilotKitProvider runtimeUrl="/api/copilotkit" properties={{ modelId: selected.id }}>
+      <CopilotKitProvider
+        runtimeUrl="/api/copilotkit"
+        properties={{ modelId: selected.id }}
+        openGenerativeUI={{ sandboxFunctions }}
+        renderActivityMessages={generativeUiRenderers}
+      >
         {threadId && <ConversationChat key={threadId} threadId={threadId} />}
       </CopilotKitProvider>
+      {linkDialog}
     </ModelContext.Provider>
   );
 }
