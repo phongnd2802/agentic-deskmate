@@ -6,6 +6,8 @@ import { backendUrl, fetchCurrentUser } from "@/lib/backend";
 export function routes(basePath: string) {
   const runtime = new CopilotRuntime({
     agents: { default: new HttpAgent({ url: `${backendUrl}/agent` }) },
+    // Turns the Model's generateSandboxedUi call into the activity the browser renders.
+    openGenerativeUI: true,
     forwardHeaders: { allow: ["cookie"] },
     identifyUser: async (request: Request) => {
       const user = await fetchCurrentUser(request.headers.get("cookie") ?? "");

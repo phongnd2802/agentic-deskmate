@@ -114,6 +114,13 @@
     "model": "Mô hình",
     "noProvider": "Tổ chức của bạn chưa có Nhà cung cấp nào nên chưa thể trả lời câu hỏi. Hãy nhờ Admin thêm một Nhà cung cấp trong Cài đặt."
   },
+  "generativeUi": {
+    "writing": "Đang tạo Generative UI…",
+    "openLinkTitle": "Mở liên kết này?",
+    "openLinkBody": "Generative UI này muốn mở một liên kết trong tab mới. Hãy kiểm tra địa chỉ trước.",
+    "cancel": "Hủy",
+    "open": "Mở liên kết"
+  },
   "settings": {
     "title": "Cài đặt",
     "providers": "Nhà cung cấp",

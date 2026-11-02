@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { AnswerText } from "@/components/answer-text";
+import { StoredGenerativeUi } from "@/components/generative-ui";
 import { fetchConversation } from "@/lib/backend";
 
 // A read-only page: it runs no agent and mounts no CopilotChat.
@@ -21,7 +22,13 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
       {conversation.answers.map((answer) => (
         <section key={answer.id} aria-label={t("answer")}>
           <p className="mb-1 font-mono text-xs text-muted-foreground">{[answer.provider_name, answer.model_id].filter(Boolean).join(" · ")}</p>
-          {answer.parts.map((part, index) => part.type === "text" && <AnswerText key={index} text={part.text} />)}
+          {answer.parts.map((part, index) =>
+            part.type === "text" ? (
+              <AnswerText key={index} text={part.text} />
+            ) : (
+              part.name === "generateSandboxedUi" && <StoredGenerativeUi key={index} args={part.args} />
+            ),
+          )}
           {answer.status === "stopped" && (
             <p className="flex items-center gap-2 text-sm text-warning">
               <CircleStop aria-hidden className="size-4" />

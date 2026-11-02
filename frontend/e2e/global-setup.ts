@@ -46,7 +46,7 @@ export default async function globalSetup(config: FullConfig) {
     const api = await request.newContext({ baseURL: config.projects[0].use.baseURL });
     await api.post("/api/backend/auth/sign-in", { data: user, failOnStatusCode: true });
     await api.post("/api/backend/providers", {
-      data: { name: "E2E Provider", api_type: "openai", base_url: "https://8.8.8.8/v1", api_key: "sk-e2e", models: [{ model_id: "e2e-model" }] },
+      data: { name: "E2E Provider", api_type: "openai", base_url: "https://8.8.8.8/v1", api_key: "sk-e2e", models: [{ model_id: "e2e-model" }, { model_id: "e2e-ui-model", generative_ui: true }] },
       failOnStatusCode: true,
     });
     await api.dispose();

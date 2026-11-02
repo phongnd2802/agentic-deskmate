@@ -35,7 +35,7 @@ test("an Admin invites a person who becomes a Member, and a Member sees no Admin
   // The link works once.
   const again = await (await browser.newContext()).newPage();
   await again.goto(path);
-  await expect(again.getByRole("alert")).toContainText("already been used");
+  await expect(again.getByRole("alert").filter({ hasText: "already been used" })).toBeVisible();
 });
 
 test("an Admin creates a password reset link that signs the User out and sets a new password", async ({ page, browser }) => {
